@@ -14,7 +14,6 @@ class Account
     private $secret;
 
     /**
-     * Account constructor.
      * @param int|null $id
      * @param string   $apiKey
      * @param string   $secret

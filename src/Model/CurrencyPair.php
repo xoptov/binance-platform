@@ -14,7 +14,6 @@ class CurrencyPair
     private $quote;
 
     /**
-     * CurrencyPair constructor.
      * @param int|null $id
      * @param Currency $base
      * @param Currency $quote

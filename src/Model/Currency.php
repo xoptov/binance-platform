@@ -14,7 +14,6 @@ class Currency
     private $name;
 
     /**
-     * Currency constructor.
      * @param null|int $id
      * @param string   $symbol
      * @param string   $name

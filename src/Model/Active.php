@@ -14,19 +14,18 @@ class Active
     private $currency;
 
     /** @var Position[] */
-    private $positions;
+    private $positions = array();
 
     /** @var double */
     private $volume;
 
     /**
-     * Active constructor.
      * @param int|null $id
      * @param Account  $account
      * @param Currency $currency
      * @param float    $volume
      */
-    public function __construct(?int $id, Account $account, Currency $currency, float $volume)
+    public function __construct(?int $id, Account $account, Currency $currency, float $volume = 0.0)
     {
         $this->id = $id;
         $this->account = $account;
