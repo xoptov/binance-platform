@@ -1,0 +1,20 @@
+{
+    "name": "xoptov/binance-platform",
+    "description": "This is trading environment for algorithmic trading on Binance Exchange.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maksim Khortov",
+            "email": "xoptov@mail.ru"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Xoptov\\BinancePlatform\\": "src/"
+        }
+    },
+    "require": {
+        "symfony/console": "^4.1"
+    }
+}
