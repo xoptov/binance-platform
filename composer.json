@@ -16,7 +16,12 @@
     },
     "require": {
     	"php": "^7.1",
-    	"ext-sqlite": "*",
-        "symfony/console": "^4.1"
+        "ext-PDO": "*",
+    	"ext-sqlite3": "*",
+        "symfony/console": "^4.1",
+        "symfony/config": "^4.1",
+        "symfony/yaml": "^4.1",
+        "myclabs/deep-copy": "^1.8",
+        "jaggedsoft/php-binance-api": "^0.4.6"
     }
 }

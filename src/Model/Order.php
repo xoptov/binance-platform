@@ -4,8 +4,8 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Order
 {
-	const SIDE_BID = 0;
-	const SIDE_ASK = 1;
+	const SIDE_BID = "bid";
+	const SIDE_ASK = "ask";
 	
 	/** @var int */
 	private $id;
@@ -25,11 +25,8 @@ class Order
 	/** @var int */
 	private $status;
 	
-	/** @var float */
-	private $volume;
-	
-	/** @var float */
-	private $price;
+	/** @var Rate */
+	private $rate;
 	
 	/** @var int */
 	private $createdAt;
@@ -43,20 +40,18 @@ class Order
 	 * @param CurrencyPair $currencyPair
 	 * @param int          $side
 	 * @param int          $status
-	 * @param float        $volume
-	 * @param float        $price
+	 * @param Rate         $rate
 	 * @param int          $createdAt
 	 * @param int          $updatedAt
 	 */
-	public function __construct(?int $id, Account $account, CurrencyPair $currencyPair, int $side, int $status, float $volume, float $price, int $createdAt, int $updatedAt)
+	public function __construct(?int $id, Account $account, CurrencyPair $currencyPair, int $side, int $status, Rate $rate, int $createdAt, int $updatedAt)
 	{
 		$this->id = $id;
 		$this->account = $account;
 		$this->currencyPair = $currencyPair;
 		$this->side = $side;
 		$this->status = $status;
-		$this->volume = $volume;
-		$this->price = $price;
+		$this->rate = $rate;
 		$this->createdAt = $createdAt;
 		$this->updatedAt = $updatedAt;
 	}
@@ -84,6 +79,20 @@ class Order
 	{
 		return $this->currencyPair;
 	}
+
+    /**
+     * @return Trade[]
+     */
+	public function getTrades(): array
+    {
+        $trades = [];
+
+        foreach ($this->trades as $trade) {
+            $trades[] = clone $trade;
+        }
+
+        return $trades;
+    }
 	
 	/**
 	 * @return int
@@ -106,7 +115,7 @@ class Order
 	 */
 	public function getVolume(): float
 	{
-		return $this->volume;
+		return $this->rate->getVolume();
 	}
 	
 	/**
@@ -114,7 +123,7 @@ class Order
 	 */
 	public function getPrice(): float
 	{
-		return $this->price;
+		return $this->rate->getPrice();
 	}
 	
 	/**

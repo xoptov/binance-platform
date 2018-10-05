@@ -1,3 +1,6 @@
 .idea/
 .project
+config.yaml
+test.db
+trader.php
 vendor/

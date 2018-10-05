@@ -20,6 +20,7 @@ class Currency
      */
     public function __construct(?int $id, string $symbol, string $name)
     {
+        $this->id = $id;
         $this->symbol = $symbol;
         $this->name = $name;
     }

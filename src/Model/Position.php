@@ -10,7 +10,7 @@ class Position
     /** @var Active */
     private $active;
     
-    /** @var Orders[] */
+    /** @var Order[] */
     private $orders = array();
     
     /** @var Trade[] */
@@ -19,24 +19,21 @@ class Position
     /** @var Trade[] */
     private $sales = array();
     
-    /** @var float */
-    private $price;
-    
-    /** @var float */
-    private $volume;
-    
+    /** @var Rate */
+    private $rate;
+
     /**
      * @param int|null $id
      * @param Active   $active
-     * @param float    $price
-     * @param float    $volume
+     * @param Rate     $rate
+     * @param Trade[]  $purchases
      */
-    public function __construct(?int $id, Active $active, float $price = 0.0, float $volume = 0.0)
+    public function __construct(?int $id, Active $active, Rate $rate, array $purchases)
     {
     	$this->id = $id;
     	$this->active = $active;
-    	$this->price = $price;
-    	$this->volume = $volume;
+    	$this->rate = $rate;
+    	$this->purchases = $purchases;
     }
     
     /**
@@ -60,7 +57,7 @@ class Position
      */
     public function getPrice(): float
     {
-    	return $this->price;
+    	return $this->rate->getPrice();
     }
     
     /**
@@ -68,6 +65,48 @@ class Position
      */
     public function getVolume(): float
     {
-    	return $this->volume;
+    	return $this->rate->getVolume();
+    }
+
+    /**
+     * @return Order[]
+     */
+    public function getOrders(): array
+    {
+        $orders = [];
+
+        foreach ($this->orders as $order) {
+            $orders[] = clone $order;
+        }
+
+        return $orders;
+    }
+
+    /**
+     * @return Trade[]
+     */
+    public function getPurchases(): array
+    {
+        $purchases = [];
+
+        foreach ($this->purchases as $purchase) {
+            $purchases[] = clone $purchase;
+        }
+
+        return $purchases;
+    }
+
+    /**
+     * @return Trade[]
+     */
+    public function getSales(): array
+    {
+        $sales = [];
+
+        foreach ($this->sales as $sale) {
+            $sales[] = clone $sale;
+        }
+
+        return $sales;
     }
 }

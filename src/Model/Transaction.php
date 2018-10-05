@@ -4,10 +4,10 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Transaction
 {
-	const TYPE_DEPOSIT = 0;
-	const TYPE_WITHDRAW = 1;
+	const TYPE_DEPOSIT  = "deposit";
+	const TYPE_WITHDRAW = "withdraw";
 	
-	/** @var Acctive */
+	/** @var Active */
 	private $active;
 	
 	/** @var int */

@@ -13,8 +13,8 @@ class Active
     /** @var Currency */
     private $currency;
 
-    /** @var Position[] */
-    private $positions = array();
+    /** @var Position */
+    private $position;
 
     /** @var double */
     private $volume;
@@ -55,6 +55,25 @@ class Active
     public function getCurrency(): Currency
     {
         return $this->currency;
+    }
+
+    /**
+     * @return Position
+     */
+    public function getPosition(): Position
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param Position $position
+     * @return Active
+     */
+    public function setPosition(Position $position): self
+    {
+        $this->position = $position;
+
+        return $this;
     }
 
     /**

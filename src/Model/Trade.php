@@ -4,8 +4,8 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Trade
 {
-	const TYPE_BUY = 0;
-	const TYPE_SELL = 1;
+	const TYPE_BUY  = "buy";
+	const TYPE_SELL = "sell";
 	
 	/** @var int */
 	private $id;
@@ -16,11 +16,8 @@ class Trade
 	/** @var int */
 	private $type;
 	
-	/** @var float */
-	private $volume;
-	
-	/** @var float */
-	private $price;
+	/** @var Rate */
+	private $rate;
 	
 	/** @var int */
 	private $timestamp;
@@ -29,17 +26,15 @@ class Trade
 	 * @param int|null $id
 	 * @param Order    $order
 	 * @param int      $type
-	 * @param float    $volume
-	 * @param float    $price
+	 * @param Rate     $rate
 	 * @param int      $timestamp
 	 */
-	public function __construct(?int $id, Order $order, int $type, float $volume, float $price, int $timestamp)
+	public function __construct(?int $id, Order $order, int $type, Rate $rate, int $timestamp)
 	{
 		$this->id = $id;
 		$this->order = $order;
 		$this->type = $type;
-		$this->volume = $volume;
-		$this->price = $price;
+		$this->rate = $rate;
 		$this->timestamp = $timestamp;
 	}
 	
@@ -72,7 +67,7 @@ class Trade
 	 */
 	public function getVolume(): float
 	{
-		return $this->volume;
+		return $this->rate->getVolume();
 	}
 	
 	/**
@@ -80,7 +75,7 @@ class Trade
 	 */
 	public function getPrice(): float
 	{
-		return $this->price;
+		return $this->rate->getPrice();
 	}
 	
 	/**

@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+
+<?php
+
+require __DIR__ . "/../vendor/autoload.php";
+
+use Symfony\Component\Yaml\Yaml;
+use Symfony\Component\Console\Application;
+use Xoptov\BinancePlatform\DatabaseConfiguration;
+use Symfony\Component\Config\Definition\Processor;
+use Xoptov\BinancePlatform\Command\TradeStartCommand;
+use Xoptov\BinancePlatform\Command\InitializeCommand;
+use Xoptov\BinancePlatform\Command\AccountListCommand;
+use Xoptov\BinancePlatform\Command\AccountCreateCommand;
+
+$config = Yaml::parse(file_get_contents(__DIR__ . "/../config.yaml"));
+$processor = new Processor;
+$databaseConfiguration = new DatabaseConfiguration;
+$processedConfiguration = $processor->processConfiguration($databaseConfiguration, $config);
+
+$dbh = new PDO("sqlite:" . $processedConfiguration["path"]);
+
+$application = new Application();
+
+$application->add(new InitializeCommand($dbh));
+$application->add(new TradeStartCommand());
+$application->add(new AccountListCommand($dbh));
+$application->add(new AccountCreateCommand($dbh));
+
+try {
+    $application->run();
+} catch (Exception $e) {
+    echo $e->getMessage();
+}
