@@ -26,14 +26,12 @@ class Position
      * @param int|null $id
      * @param Active   $active
      * @param Rate     $rate
-     * @param Trade[]  $purchases
      */
-    public function __construct(?int $id, Active $active, Rate $rate, array $purchases)
+    public function __construct(?int $id, Active $active, Rate $rate)
     {
     	$this->id = $id;
     	$this->active = $active;
     	$this->rate = $rate;
-    	$this->purchases = $purchases;
     }
     
     /**

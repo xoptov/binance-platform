@@ -6,7 +6,11 @@ class Order
 {
 	const SIDE_BID = "bid";
 	const SIDE_ASK = "ask";
-	
+
+	const STATUS_NEW  = "new";
+    const STATUS_PART = "part";
+    const STATUS_DONE = "done";
+
 	/** @var int */
 	private $id;
 	
@@ -19,10 +23,10 @@ class Order
 	/** @var Trade[] */
 	private $trades = array();
 	
-	/** @var int */
+	/** @var string */
 	private $side;
 	
-	/** @var int */
+	/** @var string */
 	private $status;
 	
 	/** @var Rate */

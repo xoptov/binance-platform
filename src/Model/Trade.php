@@ -13,7 +13,7 @@ class Trade
 	/** @var Order */
 	private $order;
 	
-	/** @var int */
+	/** @var string */
 	private $type;
 	
 	/** @var Rate */
@@ -25,11 +25,11 @@ class Trade
 	/**
 	 * @param int|null $id
 	 * @param Order    $order
-	 * @param int      $type
+	 * @param string   $type
 	 * @param Rate     $rate
 	 * @param int      $timestamp
 	 */
-	public function __construct(?int $id, Order $order, int $type, Rate $rate, int $timestamp)
+	public function __construct(?int $id, Order $order, string $type, Rate $rate, int $timestamp)
 	{
 		$this->id = $id;
 		$this->order = $order;
@@ -49,15 +49,15 @@ class Trade
 	/**
 	 * @return Order
 	 */
-	public function getOrider(): Order
+	public function getOrder(): Order
 	{
 		return $this->order;
 	}
 	
 	/**
-	 * @return int
+	 * @return string
 	 */
-	public function getType(): int
+	public function getType(): string
 	{
 		return $this->type;
 	}

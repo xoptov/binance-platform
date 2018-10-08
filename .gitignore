@@ -3,4 +3,5 @@
 config.yaml
 test.db
 trader.php
+platform.db
 vendor/

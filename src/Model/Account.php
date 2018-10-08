@@ -8,6 +8,9 @@ class Account
     private $id;
 
     /** @var string */
+    private $name;
+
+    /** @var string */
     private $apiKey;
 
     /** @var string */
@@ -15,12 +18,14 @@ class Account
 
     /**
      * @param int|null $id
+     * @param string   $name
      * @param string   $apiKey
      * @param string   $secret
      */
-    public function __construct(?int $id, string $apiKey, string $secret)
+    public function __construct(?int $id, string $name, string $apiKey, string $secret)
     {
         $this->id = $id;
+        $this->name = $name;
         $this->apiKey = $apiKey;
         $this->secret = $secret;
     }
@@ -31,6 +36,14 @@ class Account
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
     }
 
     /**
