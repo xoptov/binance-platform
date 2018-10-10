@@ -1,2 +1,11 @@
-Interpritator options:
-./configure --enable-cli --disable-cgi --enable-debug --enable-maintainer-zts --with-curl --with-openssl --disable-opcache --enable-bcmath --enable-mbstring
+Build PHP options:
+./configure
+    --enable-cli
+    --disable-cgi
+    --enable-debug
+    --enable-maintainer-zts
+    --with-curl
+    --with-openssl
+    --disable-opcache
+    --enable-bcmath
+    --enable-mbstring

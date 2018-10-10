@@ -13,16 +13,21 @@ class CurrencyPair
     /** @var Currency */
     private $quote;
 
+    /** @var string */
+    private $symbol;
+
     /**
      * @param int|null $id
      * @param Currency $base
      * @param Currency $quote
+     * @param string   $symbol
      */
-    public function __construct(?int $id, Currency $base, Currency $quote)
+    public function __construct(?int $id, Currency $base, Currency $quote, string $symbol)
     {
         $this->id = $id;
         $this->base = $base;
         $this->quote = $quote;
+        $this->symbol = $symbol;
     }
 
     /**
@@ -47,5 +52,13 @@ class CurrencyPair
     public function getQuote(): Currency
     {
         return $this->quote;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSymbol(): string
+    {
+        return $this->symbol;
     }
 }

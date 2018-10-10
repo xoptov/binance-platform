@@ -38,6 +38,6 @@ class AccountListCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
+        throw new \RuntimeException("Need implement this command.");
     }
 }
