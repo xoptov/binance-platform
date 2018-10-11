@@ -4,34 +4,54 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Order
 {
-	const SIDE_BID = "bid";
-	const SIDE_ASK = "ask";
+    use RateTrait;
 
-	const STATUS_NEW  = "new";
-    const STATUS_PART = "part";
-    const STATUS_DONE = "done";
+	const SIDE_BUY  = "BUY";
+	const SIDE_SELL = "SELL";
+
+	const STATUS_NEW              = "NEW";
+    const STATUS_PARTIALLY_FILLED = "PARTIALLY_FILLED";
+    const STATUS_FILLED           = "FILLED";
+    const STATUS_CANCELED         = "CANCELED";
+    const STATUS_PENDING_CANCEL   = "PENDING_CANCEL";
+    const STATUS_REJECTED         = "REJECTED";
+    const STATUS_EXPIRED          = "EXPIRED";
+
+    const TYPE_LIMIT             = "LIMIT";
+    const TYPE_MARKET            = "MARKET";
+    const TYPE_STOP_LOSS         = "STOP_LOSS";
+    const TYPE_STOP_LOSS_LIMIT   = "STOP_LOSS_LIMIT";
+    const TYPE_TAKE_PROFIT       = "TAKE_PROFIT";
+    const TYPE_TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT";
+    const TYPE_LIMIT_MAKER       = "LIMIT_MAKER";
 
 	/** @var int */
 	private $id;
-	
-	/** @var Account */
-	private $account;
 	
 	/** @var CurrencyPair */
 	private $currencyPair;
 	
 	/** @var Trade[] */
 	private $trades = array();
-	
-	/** @var string */
+
+    /** @var string */
+    private $type;
+
+    /** @var string */
 	private $side;
-	
-	/** @var string */
+
+    /** @var string */
 	private $status;
-	
-	/** @var Rate */
-	private $rate;
-	
+
+	/** @var float */
+    private $stopPrice;
+
+    /** @var float */
+    private $executedVolume;
+
+    /** @var float */
+    private $icebergVolume;
+
 	/** @var int */
 	private $createdAt;
 	
@@ -39,41 +59,41 @@ class Order
 	private $updatedAt;
 	
 	/**
-	 * @param int|null     $id
-	 * @param Account      $account
+	 * @param int          $id
 	 * @param CurrencyPair $currencyPair
-	 * @param int          $side
-	 * @param int          $status
-	 * @param Rate         $rate
+     * @param string       $type
+	 * @param string       $side
+	 * @param string       $status
+	 * @param float        $price
+     * @param float        $volume
+     * @param float        $stopPrice
+     * @param float        $executedVolume
+     * @param float        $icebergVolume
 	 * @param int          $createdAt
 	 * @param int          $updatedAt
 	 */
-	public function __construct(?int $id, Account $account, CurrencyPair $currencyPair, int $side, int $status, Rate $rate, int $createdAt, int $updatedAt)
+	public function __construct(int $id, CurrencyPair $currencyPair, string $type, string $side, string $status, float $price, float $volume, float $stopPrice, float $executedVolume, float $icebergVolume, int $createdAt, int $updatedAt)
 	{
 		$this->id = $id;
-		$this->account = $account;
 		$this->currencyPair = $currencyPair;
+		$this->type = $type;
 		$this->side = $side;
 		$this->status = $status;
-		$this->rate = $rate;
+		$this->price = $price;
+		$this->volume = $volume;
+		$this->stopPrice = $stopPrice;
+		$this->executedVolume = $executedVolume;
+		$this->icebergVolume = $icebergVolume;
 		$this->createdAt = $createdAt;
 		$this->updatedAt = $updatedAt;
 	}
 	
 	/**
-	 * @return int|null
+	 * @return int
 	 */
-	public function getId(): ?int
+	public function getId(): int
 	{
 		return $this->id;
-	}
-	
-	/**
-	 * @return Account
-	 */
-	public function getAccount(): Account
-	{
-		return $this->account;
 	}
 	
 	/**

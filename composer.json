@@ -12,15 +12,14 @@
     "autoload": {
         "psr-4": {
             "Xoptov\\BinancePlatform\\": "src/"
-        }
+        },
+        "classmap": [
+            "vendor/jaggedsoft/php-binance-api/php-binance-api-rate-limiter.php"
+        ]
     },
     "require": {
         "php": "^7.1",
-        "ext-PDO": "*",
-        "ext-sqlite3": "*",
         "symfony/console": "^4.1",
-        "symfony/config": "^4.1",
-        "symfony/yaml": "^4.1",
         "jaggedsoft/php-binance-api": "^0.4.6"
     }
 }

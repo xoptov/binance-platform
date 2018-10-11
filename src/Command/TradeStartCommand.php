@@ -2,34 +2,15 @@
 
 namespace Xoptov\BinancePlatform\Command;
 
-use PDO;
-use Xoptov\BinancePlatform\Model\Account;
 use Xoptov\BinancePlatform\Platform;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Xoptov\BinancePlatform\Repository\AccountRepository;
-use Xoptov\BinancePlatform\RepositoryManager;
 
 class TradeStartCommand extends Command
 {
     const SUCCESS = 0;
-    const FILE_NOT_FOUND = 1;
-
-    /** @var PDO */
-    private $dbh;
-
-    /**
-     * @param PDO  $dbh
-     * @param null $name
-     */
-    public function __construct(PDO $dbh, $name = null)
-    {
-        parent::__construct($name);
-
-        $this->dbh = $dbh;
-    }
 
     /**
      * {@inheritdoc}
@@ -37,10 +18,11 @@ class TradeStartCommand extends Command
     protected function configure()
     {
         $this
-            ->setName("trade:start")
+            ->setName("start")
             ->setDescription("This command for start trading with ")
-            ->addArgument("account", InputArgument::REQUIRED, "Account id for trading.")
-            ->addArgument("symbol", InputArgument::REQUIRED, "Currency pair symbol for trading.")
+            ->addArgument("symbol", InputArgument::REQUIRED, "Trading symbol for trade.")
+            ->addArgument("apiKey", InputArgument::REQUIRED, "Account api key for connecting to exchange.")
+            ->addArgument("secret", InputArgument::REQUIRED, "Secret for connecting to exchange.")
             ->addArgument("script", InputArgument::OPTIONAL, "Script file of trading algorithm.", "trader.php");
     }
 
@@ -49,23 +31,19 @@ class TradeStartCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $traderScript = $input->getArgument("script");
+        $script = $input->getArgument("script");
 
-        if (!file_exists($traderScript)) {
-            $output->writeln("File " . $traderScript . " not found!");
-
-            return self::FILE_NOT_FOUND;
+        if (file_exists($script)) {
+            require_once $script;
         }
 
-        $repositoryManager = new RepositoryManager();
-        $repositoryManager->add(new AccountRepository($this->dbh));
-
-        $accountId = $input->getArgument("account");
         $symbol = $input->getArgument("symbol");
+        $apiKey = $input->getArgument("apiKey");
+        $secret = $input->getArgument("secret");
 
-        $platform = Platform::create($this->dbh, $repositoryManager);
-        $platform->signIn($accountId);
-        $platform->load($symbol);
+        $platform = Platform::create();
+        $platform->initialize($symbol, $apiKey, $secret);
+        $platform->run();
 
         return self::SUCCESS;
     }

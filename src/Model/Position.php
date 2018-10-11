@@ -4,9 +4,6 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Position
 {
-	/** @var int */
-    private $id;
-
     /** @var Active */
     private $active;
     
@@ -23,23 +20,13 @@ class Position
     private $rate;
 
     /**
-     * @param int|null $id
      * @param Active   $active
      * @param Rate     $rate
      */
-    public function __construct(?int $id, Active $active, Rate $rate)
+    public function __construct(Active $active, Rate $rate)
     {
-    	$this->id = $id;
     	$this->active = $active;
     	$this->rate = $rate;
-    }
-    
-    /**
-     * @return int|null
-     */
-    public function getId(): ?int
-    {
-    	return $this->id;
     }
     
     /**

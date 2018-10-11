@@ -4,8 +4,8 @@ namespace Xoptov\BinancePlatform\Model;
 
 class CurrencyPair
 {
-    /** @var int */
-    private $id;
+    const STATUS_TRADING = "TRADING";
+    const STATUS_BREAK   = "BREAK";
 
     /** @var Currency */
     private $base;
@@ -14,28 +14,36 @@ class CurrencyPair
     private $quote;
 
     /** @var string */
-    private $symbol;
+    private $status;
+
+    /** @var array */
+    private $orderTypes;
+
+    /** @var bool */
+    private $icebergAllowed;
 
     /**
-     * @param int|null $id
      * @param Currency $base
      * @param Currency $quote
-     * @param string   $symbol
+     * @param string   $status
+     * @param array    $orderTypes
+     * @param bool     $icebergAllowed
      */
-    public function __construct(?int $id, Currency $base, Currency $quote, string $symbol)
+    public function __construct(Currency $base, Currency $quote, string $status, array $orderTypes, bool $icebergAllowed)
     {
-        $this->id = $id;
         $this->base = $base;
         $this->quote = $quote;
-        $this->symbol = $symbol;
+        $this->status = $status;
+        $this->orderTypes = $orderTypes;
+        $this->icebergAllowed = $icebergAllowed;
     }
 
     /**
-     * @return int|null
+     * @return string
      */
-    public function getId(): ?int
+    public function __toString()
     {
-        return $this->id;
+        return $this->getSymbol();
     }
 
     /**
@@ -59,6 +67,46 @@ class CurrencyPair
      */
     public function getSymbol(): string
     {
-        return $this->symbol;
+        return sprintf("%s%s", $this->base->getSymbol(), $this->quote->getSymbol());
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOrderTypes(): array
+    {
+        return $this->orderTypes;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isIcebergAllowed(): bool
+    {
+        return $this->icebergAllowed;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTrading(): bool
+    {
+        return self::STATUS_TRADING === $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBreak(): bool
+    {
+        return self::STATUS_BREAK === $this->status;
     }
 }

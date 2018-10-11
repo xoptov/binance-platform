@@ -1,7 +1,5 @@
 .idea/
 .project
-config.yaml
-test.db
+ca.pem
 trader.php
-platform.db
 vendor/

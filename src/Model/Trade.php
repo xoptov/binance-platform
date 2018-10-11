@@ -23,13 +23,13 @@ class Trade
 	private $timestamp;
 	
 	/**
-	 * @param int|null $id
+	 * @param int      $id
 	 * @param Order    $order
 	 * @param string   $type
 	 * @param Rate     $rate
 	 * @param int      $timestamp
 	 */
-	public function __construct(?int $id, Order $order, string $type, Rate $rate, int $timestamp)
+	public function __construct(int $id, Order $order, string $type, Rate $rate, int $timestamp)
 	{
 		$this->id = $id;
 		$this->order = $order;
@@ -39,9 +39,9 @@ class Trade
 	}
 	
 	/**
-	 * @return int|null
+	 * @return int
 	 */
-	public function getId(): ?int
+	public function getId(): int
 	{
 		return $this->id;
 	}

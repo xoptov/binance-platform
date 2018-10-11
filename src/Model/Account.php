@@ -4,61 +4,100 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Account
 {
-    /** @var int */
-    private $id;
+    /** @var bool */
+    private $canTrade;
 
-    /** @var string */
-    private $name;
+    /** @var bool */
+    private $canWithdraw;
 
-    /** @var string */
-    private $apiKey;
+    /** @var bool */
+    private $canDeposit;
 
-    /** @var string */
-    private $secret;
+    /** @var float */
+    private $makerCommission;
+
+    /** @var float */
+    private $takerCommission;
+
+    /** @var float */
+    private $buyerCommission;
+
+    /** @var float */
+    private $sellerCommission;
 
     /**
-     * @param int|null $id
-     * @param string   $name
-     * @param string   $apiKey
-     * @param string   $secret
+     * @param bool  $canTrade
+     * @param bool  $canWithdraw
+     * @param bool  $canDeposit
+     * @param float $makerCommission
+     * @param float $takerCommission
+     * @param float $buyerCommission
+     * @param float $sellerCommission
      */
-    public function __construct(?int $id, string $name, string $apiKey, string $secret)
+    public function __construct(bool $canTrade, bool $canWithdraw, bool $canDeposit, float $makerCommission, float $takerCommission, float $buyerCommission, float $sellerCommission)
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->apiKey = $apiKey;
-        $this->secret = $secret;
+        $this->canTrade = $canTrade;
+        $this->canWithdraw = $canWithdraw;
+        $this->canDeposit = $canDeposit;
+        $this->makerCommission = $makerCommission;
+        $this->takerCommission = $takerCommission;
+        $this->buyerCommission = $buyerCommission;
+        $this->sellerCommission = $sellerCommission;
     }
 
     /**
-     * @return int|null
+     * @return bool
      */
-    public function getId(): ?int
+    public function isCanTrade(): bool
     {
-        return $this->id;
+        return $this->canTrade;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getName(): string
+    public function isCanWithdraw(): bool
     {
-        return $this->name;
+        return $this->canWithdraw;
     }
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getApiKey(): string
+    public function isCanDeposit(): bool
     {
-        return $this->apiKey;
+        return $this->canDeposit;
     }
 
     /**
-     * @return string
+     * @return float
      */
-    public function getSecret(): string
+    public function getMakerCommission(): float
     {
-        return $this->secret;
+        return $this->makerCommission;
+    }
+
+    /**
+     * @return float
+     */
+    public function getTakerCommission(): float
+    {
+        return $this->takerCommission;
+    }
+
+    /**
+     * @return float
+     */
+    public function getBuyerCommission(): float
+    {
+        return $this->buyerCommission;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSellerCommission(): float
+    {
+        return $this->sellerCommission;
     }
 }

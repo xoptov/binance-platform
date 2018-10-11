@@ -4,33 +4,23 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Currency
 {
-    /** @var int */
-    private $id;
-
     /** @var string */
     private $symbol;
 
-    /** @var string */
-    private $name;
-
     /**
-     * @param null|int $id
-     * @param string   $symbol
-     * @param string   $name
+     * @param string $symbol
      */
-    public function __construct(?int $id, string $symbol, string $name)
+    public function __construct(string $symbol)
     {
-        $this->id = $id;
         $this->symbol = $symbol;
-        $this->name = $name;
     }
 
     /**
-     * @return int|null
+     * @return string
      */
-    public function getId(): ?int
+    public function __toString()
     {
-        return $this->id;
+        return $this->symbol;
     }
 
     /**
@@ -39,13 +29,5 @@ class Currency
     public function getSymbol(): string
     {
         return $this->symbol;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
     }
 }
