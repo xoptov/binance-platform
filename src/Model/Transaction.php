@@ -4,6 +4,8 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Transaction
 {
+    use ActionTrait;
+
 	const TYPE_DEPOSIT  = "deposit";
 	const TYPE_WITHDRAW = "withdraw";
 
@@ -18,21 +20,9 @@ class Transaction
 	const STATUS_FAILURE = 5;
 	const STATUS_COMPLETED = 6;
 
-	/** @var string */
-	private $id;
-
 	/** @var Active */
 	private $active;
 
-	/** @var string */
-	private $type;
-	
-	/** @var float */
-	private $volume;
-	
-	/** @var int */
-	private $timestamp;
-	
 	/**
      * @param string $id
 	 * @param Active $active
@@ -49,44 +39,12 @@ class Transaction
 		$this->timestamp = $timestamp;
 	}
 
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
 	/**
 	 * @return Active
 	 */
 	public function getActive(): Active
 	{
 		return $this->active;
-	}
-
-	/**
-	 * @return int
-	 */
-	public function getType(): string
-	{
-		return $this->type;
-	}
-	
-	/**
-	 * @return float
-	 */
-	public function getVolume(): float
-	{
-		return $this->volume;
-	}
-	
-	/**
-	 * @return int
-	 */
-	public function getTimestamp(): int
-	{
-		return $this->timestamp;
 	}
 
     /**
@@ -96,5 +54,21 @@ class Transaction
 	public function isEqual(Transaction $other): bool
     {
         return $other->getId() === $this->id && $other->getType() === $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDeposit(): bool
+    {
+        return self::TYPE_DEPOSIT === $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isWithdraw(): bool
+    {
+        return self::TYPE_WITHDRAW === $this->type;
     }
 }

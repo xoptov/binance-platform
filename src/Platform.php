@@ -4,10 +4,14 @@ namespace Xoptov\BinancePlatform;
 
 use Binance\API;
 use Binance\RateLimiter;
+use Xoptov\BinancePlatform\Model\ActionInterface;
+use Xoptov\BinancePlatform\Model\Trade;
 use Xoptov\BinancePlatform\Model\Order;
 use Xoptov\BinancePlatform\Model\Active;
 use Xoptov\BinancePlatform\Model\Account;
 use Xoptov\BinancePlatform\Model\Currency;
+use Xoptov\BinancePlatform\Model\Position;
+use Xoptov\BinancePlatform\Model\ActionTrait;
 use Xoptov\BinancePlatform\Model\Transaction;
 use Xoptov\BinancePlatform\Model\CurrencyPair;
 
@@ -17,12 +21,12 @@ class Platform
     private static $created = false;
 
     /** @var int */
-    private $limit;
+    private static $limit;
 
     /** @var bool */
     private $initialized = false;
 
-    /** @var API */
+    /** @var RateLimiter */
     private $client;
 
     /** @var Account */
@@ -46,17 +50,22 @@ class Platform
     /** @var TransactionStorage */
     private $transactionStorage;
 
+    /** @var TradeHistory */
+    private $tradeHistory;
+
     /**
-     * @param int $limit
+     * @param int|null $limit
      * @return null|Platform
      */
-    public static function create(int $limit = 500)
+    public static function create(?int $limit = 500)
     {
         if (static::$created) {
             return null;
         }
 
-        return new Platform($limit);
+        self::$limit = $limit;
+
+        return new self();
     }
 
     /**
@@ -86,6 +95,7 @@ class Platform
             }
 
             $this->tradePair = $this->getCurrencyPair($symbol);
+            $this->tradeHistory = TradeHistory::create($this->client, $this->tradePair, static::$limit);
 
             // Loading open account orders.
             $this->_loadOrders();
@@ -112,14 +122,9 @@ class Platform
         //TODO: start event loop.
     }
 
-    /**
-     * Singleton platform constructor.
-     * @param int $limit
-     */
-    private function __construct(int $limit)
+    private function __construct()
     {
         static::$created = true;
-        $this->limit = $limit;
         $this->transactionStorage = new TransactionStorage();
     }
 
@@ -354,12 +359,14 @@ class Platform
             }
 
             $base = $this->getCurrency($item["baseAsset"]);
+
             if (!$base) {
                 $base = new Currency($item["baseAsset"]);
                 $this->addCurrency($base);
             }
 
             $quote = $this->getCurrency($item["quoteAsset"]);
+
             if (!$quote) {
                 $quote = new Currency($item["quoteAsset"]);
                 $this->addCurrency($quote);
@@ -378,7 +385,7 @@ class Platform
         $lastOrderId = 1;
 
         do {
-            $result = $this->client->orders($this->tradePair, $this->limit, $lastOrderId);
+            $result = $this->client->orders($this->tradePair, static::$limit, $lastOrderId);
 
             foreach ($result as $item) {
 
@@ -408,7 +415,7 @@ class Platform
                 $lastOrderId = $item["orderId"];
             }
 
-        } while (count($result) == $this->limit);
+        } while (count($result) == static::$limit);
     }
 
     /**
@@ -424,9 +431,69 @@ class Platform
 
         $this->_loadDeposits($active);
         $this->_loadWithdrawal($active);
+
         $this->transactionStorage->sort();
 
-        //TODO: need implement calculation position.
+        $position = null;
+
+        while ($trades = $this->tradeHistory->get()) {
+
+            /** @var Trade $first */
+            $first = current($trades);
+
+            /** @var Trade $last */
+            $last = $trades[count($trades) - 1];
+
+            if ($this->tradeHistory->isEOS()) {
+                $transactions = $this->transactionStorage->get($first->getTimestamp());
+            } else {
+                $transactions = $this->transactionStorage->get($first->getTimestamp(), $last->getTimestamp());
+            }
+
+            /** @var ActionTrait[] $actions */
+            $actions = array_merge($transactions, $trades);
+
+            // Sorting action by time.
+            usort($actions, function(ActionTrait $a, ActionTrait $b) {
+                if ($a->getTimestamp() < $b->getTimestamp()) {
+                    return 1;
+                } elseif ($a->getTimestamp() > $b->getTimestamp()) {
+                    return -1;
+                }
+                return 0;
+            });
+
+            foreach ($actions as $action) {
+
+                if (empty($position)) {
+                    if ($action instanceof Trade && $action->isBuy()) {
+                        $position = new Position($active);
+                        $position->trade($action);
+                    }
+                    continue;
+                }
+
+                if ($action instanceof Transaction) {
+                    $position->withdraw($action);
+                } elseif ($action instanceof Trade) {
+                    $position->trade($action);
+                } else {
+                    continue;
+                }
+
+                /** @var Position $position */
+                if ($position->isClosed()) {
+                    $position = null;
+                }
+            }
+        }
+
+        if (!empty($position)) {
+            $active->setPosition($position);
+        }
+
+        $this->transactionStorage->clear();
+        $this->tradeHistory->clear();
     }
 
     /**

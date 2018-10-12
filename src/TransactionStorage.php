@@ -61,7 +61,7 @@ class TransactionStorage
      * @param null|int $endTime
      * @return array
      */
-    public function get(int $startTime, ?int $endTime): array
+    public function get(int $startTime, ?int $endTime = null): array
     {
         if ($this->part) {
             if ($endTime) {
@@ -86,5 +86,11 @@ class TransactionStorage
         $this->part++;
 
         return $part;
+    }
+
+    public function clear(): void
+    {
+        $this->part = 0;
+        $this->transactions = array();
     }
 }

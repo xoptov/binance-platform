@@ -4,100 +4,93 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Account
 {
-    /** @var bool */
-    private $canTrade;
+    const ACCESS_TRADE    = "trade";
+    const ACCESS_WITHDRAW = "withdraw";
+    const ACCESS_DEPOSIT  = "deposit";
 
-    /** @var bool */
-    private $canWithdraw;
+    const FEE_MAKER = "maker";
+    const FEE_TAKER = "taker";
+    const FEE_BUYER = "buyer";
+    const FEE_SELLER = "seller";
 
-    /** @var bool */
-    private $canDeposit;
+    /** @var array */
+    private $access = array(
+        self::ACCESS_TRADE    => false,
+        self::ACCESS_WITHDRAW => false,
+        self::ACCESS_DEPOSIT  => false
+    );
 
-    /** @var float */
-    private $makerCommission;
-
-    /** @var float */
-    private $takerCommission;
-
-    /** @var float */
-    private $buyerCommission;
-
-    /** @var float */
-    private $sellerCommission;
+    /** @var array */
+    private $fees = array(
+        self::FEE_MAKER  => 0,
+        self::FEE_TAKER  => 0,
+        self::FEE_BUYER  => 0,
+        self::FEE_SELLER => 0
+    );
 
     /**
-     * @param bool  $canTrade
-     * @param bool  $canWithdraw
-     * @param bool  $canDeposit
-     * @param float $makerCommission
-     * @param float $takerCommission
-     * @param float $buyerCommission
-     * @param float $sellerCommission
+     * @param array $access
+     * @param array $fees
      */
-    public function __construct(bool $canTrade, bool $canWithdraw, bool $canDeposit, float $makerCommission, float $takerCommission, float $buyerCommission, float $sellerCommission)
+    public function __construct(array $access, array $fees)
     {
-        $this->canTrade = $canTrade;
-        $this->canWithdraw = $canWithdraw;
-        $this->canDeposit = $canDeposit;
-        $this->makerCommission = $makerCommission;
-        $this->takerCommission = $takerCommission;
-        $this->buyerCommission = $buyerCommission;
-        $this->sellerCommission = $sellerCommission;
+        $this->setAccess($access);
+        $this->setFees($fees);
     }
 
     /**
+     * @param string $action
      * @return bool
      */
-    public function isCanTrade(): bool
+    public function isCan(string $action): bool
     {
-        return $this->canTrade;
+        if (key_exists($action, $this->access)) {
+            return $this->access[$action];
+        }
+
+        return false;
     }
 
     /**
-     * @return bool
+     * @param string $type
+     * @return int
      */
-    public function isCanWithdraw(): bool
+    public function getFee(string $type): int
     {
-        return $this->canWithdraw;
+        if (key_exists($type, $this->fees)) {
+            return $this->fees[$type];
+        }
+
+        return 0;
     }
 
     /**
-     * @return bool
+     * @param array $access
+     * @return Account
      */
-    public function isCanDeposit(): bool
+    private function setAccess(array $access): self
     {
-        return $this->canDeposit;
+        foreach ($access as $key => $value) {
+            if (key_exists($key, $this->access)) {
+                $this->access[$key] = $value;
+            }
+        }
+
+        return $this;
     }
 
     /**
-     * @return float
+     * @param array $fees
+     * @return Account
      */
-    public function getMakerCommission(): float
+    private function setFees(array $fees): self
     {
-        return $this->makerCommission;
-    }
+        foreach ($fees as $key => $value) {
+            if (key_exists($key, $this->fees)) {
+                $this->fees[$key] = $value;
+            }
+        }
 
-    /**
-     * @return float
-     */
-    public function getTakerCommission(): float
-    {
-        return $this->takerCommission;
-    }
-
-    /**
-     * @return float
-     */
-    public function getBuyerCommission(): float
-    {
-        return $this->buyerCommission;
-    }
-
-    /**
-     * @return float
-     */
-    public function getSellerCommission(): float
-    {
-        return $this->sellerCommission;
+        return $this;
     }
 }

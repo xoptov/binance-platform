@@ -135,22 +135,6 @@ class Order
 	}
 	
 	/**
-	 * @return float
-	 */
-	public function getVolume(): float
-	{
-		return $this->rate->getVolume();
-	}
-	
-	/**
-	 * @return float
-	 */
-	public function getPrice(): float
-	{
-		return $this->rate->getPrice();
-	}
-	
-	/**
 	 * @return int
 	 */
 	public function getCreatedAt(): int

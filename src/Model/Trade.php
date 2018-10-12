@@ -4,85 +4,113 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Trade
 {
-	const TYPE_BUY  = "buy";
-	const TYPE_SELL = "sell";
-	
-	/** @var int */
-	private $id;
-	
-	/** @var Order */
+    use RateTrait;
+
+    use ActionTrait;
+
+	const TYPE_BUY  = "BUY";
+	const TYPE_SELL = "SELL";
+
+	/** @var CurrencyPair */
+	private $currencyPair;
+
+	/** @var mixed */
 	private $order;
-	
-	/** @var string */
-	private $type;
-	
-	/** @var Rate */
-	private $rate;
-	
-	/** @var int */
-	private $timestamp;
-	
+
+	/** @var Commission */
+	private $commission;
+
+	/** @var bool */
+	private $maker;
+
 	/**
-	 * @param int      $id
-	 * @param Order    $order
-	 * @param string   $type
-	 * @param Rate     $rate
-	 * @param int      $timestamp
+	 * @param int          $id
+     * @param mixed        $order
+     * @param CurrencyPair $currencyPair
+	 * @param string       $type
+	 * @param float        $price
+     * @param float        $volume
+     * @param Commission   $commission
+     * @param bool         $maker
+	 * @param int          $timestamp
 	 */
-	public function __construct(int $id, Order $order, string $type, Rate $rate, int $timestamp)
+	public function __construct(int $id, $order, CurrencyPair $currencyPair, string $type, float $price, float $volume, Commission $commission, bool $maker, int $timestamp)
 	{
 		$this->id = $id;
 		$this->order = $order;
+		$this->currencyPair = $currencyPair;
 		$this->type = $type;
-		$this->rate = $rate;
+		$this->price = $price;
+		$this->volume = $volume;
+		$this->commission = $commission;
+		$this->maker = $maker;
 		$this->timestamp = $timestamp;
 	}
-	
-	/**
-	 * @return int
-	 */
-	public function getId(): int
-	{
-		return $this->id;
-	}
-	
-	/**
-	 * @return Order
-	 */
-	public function getOrder(): Order
-	{
-		return $this->order;
-	}
-	
-	/**
-	 * @return string
-	 */
-	public function getType(): string
-	{
-		return $this->type;
-	}
-	
-	/**
-	 * @return float
-	 */
-	public function getVolume(): float
-	{
-		return $this->rate->getVolume();
-	}
-	
-	/**
-	 * @return float
-	 */
-	public function getPrice(): float
-	{
-		return $this->rate->getPrice();
-	}
-	
-	/**
-	 * @return int
-	 */
-	public function getTimestamp(): int
-	{
-		return $this->timestamp;
-	}
+
+    /**
+     * @return CurrencyPair
+     */
+    public function getCurrencyPair(): CurrencyPair
+    {
+        return $this->currencyPair;
+    }
+
+    /**
+     * @return mixed
+     */
+	public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     * @return Trade
+     */
+    public function setOrder($order): self
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    /**
+     * @return Currency
+     */
+    public function getCommissionCurrency(): Currency
+    {
+        return $this->commission->getCurrency();
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommissionSymbol(): string
+    {
+        return $this->commission->getSymbol();
+    }
+
+    /**
+     * @return float
+     */
+    public function getCommissionVolume(): float
+    {
+        return $this->commission->getVolume();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBuy(): bool
+    {
+        return self::TYPE_BUY === $this->type;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isSell(): bool
+    {
+        return self::TYPE_SELL === $this->type;
+    }
 }
