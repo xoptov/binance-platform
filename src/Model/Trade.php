@@ -2,9 +2,9 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
-class Trade
+class Trade implements TimeTrackAbleInterface
 {
-    use RateTrait;
+    use PriceTrait;
 
     use ActionTrait;
 

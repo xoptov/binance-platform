@@ -15,4 +15,12 @@ class Rate
         $this->price = $price;
         $this->volume = $volume;
     }
+
+    /**
+     * @param float $value
+     */
+    public function decreaseVolume(float $value): void
+    {
+        $this->volume -= $value;
+    }
 }

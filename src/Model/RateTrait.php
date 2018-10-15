@@ -25,4 +25,12 @@ trait RateTrait
     {
         return $this->volume;
     }
+
+    /**
+     * @return float
+     */
+    public function getTotal(): float
+    {
+        return $this->price * $this->volume;
+    }
 }

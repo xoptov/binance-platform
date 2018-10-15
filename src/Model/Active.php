@@ -164,6 +164,44 @@ class Active
         return true;
     }
 
+    public function flush(): void
+    {
+        $this->volume = 0.0;
+    }
+
+    /**
+     * @param Active $other
+     * @return bool
+     */
+    public function isEqual(Active $other)
+    {
+        return $this->getCurrency() === $other->getCurrency();
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getAveragePrice(): ?float
+    {
+        if ($this->position) {
+            return $this->position->getAveragePrice();
+        }
+
+        return null;
+    }
+
+    /**
+     * @return float|null
+     */
+    public function getWeightedAveragePrice(): ?float
+    {
+        if ($this->position) {
+            return $this->position->getWeightedAveragePrice();
+        }
+
+        return null;
+    }
+
     /**
      * @param Transaction $transaction
      */
@@ -189,8 +227,8 @@ class Active
             $this->position = new Position();
         }
 
-        $this->position->addPurchase($trade);
-        $this->increase($trade->getVolume());
+        $this->position->purchase($trade);
+        $this->increase($trade->getVolume() - $trade->getCommissionVolume());
     }
 
     /**
@@ -198,13 +236,7 @@ class Active
      */
     private function sell(Trade $trade): void
     {
-        if ($this->getCurrency() === $trade->getCommissionCurrency()) {
-            $value = $trade->getVolume() + $trade->getCommissionVolume();
-        } else {
-            $value = $trade->getVolume();
-        }
-
-        $this->decrease($value);
+        $this->decrease($trade->getVolume());
     }
 
     /**
@@ -224,9 +256,9 @@ class Active
             throw new \RuntimeException("Insufficient funds.");
         }
 
-        if (empty($this->position)) {
-            $this->volume -= $value;
+        $this->volume -= $value;
 
+        if (empty($this->position)) {
             return;
         }
 

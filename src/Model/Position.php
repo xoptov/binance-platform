@@ -4,56 +4,53 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Position
 {
-    /** @var Trade[] */
+    /** @var Rate[] */
     private $purchases = array();
 
     /** @var float */
     private $volume = 0.0;
 
     /**
-     * @return Trade[]
-     */
-    public function getPurchases(): array
-    {
-        $purchases = [];
-
-        foreach ($this->purchases as $purchase) {
-            $purchases[] = clone $purchase;
-        }
-
-        return $purchases;
-    }
-
-    /**
      * @param Trade $trade
      * @return bool
      */
-    public function hasPurchase(Trade $trade): bool
+    public function purchase(Trade $trade): bool
     {
-        /** @var Trade $purchase */
-        foreach ($this->purchases as $purchase) {
-            if ($purchase->getId() === $trade->getId()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param Trade $trade
-     * @return bool
-     */
-    public function addPurchase(Trade $trade): bool
-    {
-        if ($this->hasPurchase($trade)) {
+        if (!$trade->isBuy() || isset($this->purchases[$trade->getId()])) {
             return false;
         }
 
-        $this->volume += $trade->getVolume();
-        $this->purchases[] = $trade;
+        $purchase = new Rate($trade->getPrice(), $trade->getVolume() - $trade->getCommissionVolume());
+
+        $this->volume += $purchase->getVolume();
+        $this->purchases[$trade->getId()] = $purchase;
 
         return true;
+    }
+
+    /**
+     * @param float $value
+     */
+    public function decrease(float $value): void
+    {
+        $this->volume -= $value;
+
+        // Recalculating purchases.
+        foreach ($this->purchases as $key => $purchase) {
+
+            if ($purchase->getVolume() > $value) {
+                $purchase->decreaseVolume($value);
+                break;
+            }
+
+            if ($purchase->getVolume() == $value) {
+                unset($this->purchases[$key]);
+                break;
+            }
+
+            $value = $value - $purchase->getVolume();
+            unset($this->purchases[$key]);
+        }
     }
 
     /**
@@ -65,10 +62,33 @@ class Position
     }
 
     /**
-     * @param float $value
+     * @return float
      */
-    public function decrease(float $value): void
+    public function getAveragePrice(): float
     {
-        $this->volume -= $value;
+        $totalPrice = 0.0;
+
+        /** @var Rate $purchase */
+        foreach ($this->purchases as $purchase) {
+            $totalPrice += $purchase->getPrice();
+        }
+
+        return $totalPrice / count($this->purchases);
+    }
+
+    /**
+     * @return float
+     */
+    public function getWeightedAveragePrice(): float
+    {
+        $totalPrice = 0.0;
+        $totalVolume = 0.0;
+
+        foreach ($this->purchases as $purchase) {
+            $totalPrice += $purchase->getTotal();
+            $totalVolume += $purchase->getVolume();
+        }
+
+        return $totalPrice / $totalVolume;
     }
 }

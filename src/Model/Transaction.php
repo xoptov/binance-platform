@@ -2,7 +2,7 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
-class Transaction
+class Transaction implements TimeTrackAbleInterface
 {
     use ActionTrait;
 
@@ -20,31 +20,31 @@ class Transaction
 	const STATUS_FAILURE = 5;
 	const STATUS_COMPLETED = 6;
 
-	/** @var Active */
-	private $active;
+	/** @var Currency */
+	private $currency;
 
 	/**
-     * @param string $id
-	 * @param Active $active
-	 * @param string $type
-	 * @param float  $volume
-	 * @param int    $timestamp
+     * @param string   $id
+	 * @param Currency $currency
+	 * @param string   $type
+	 * @param float    $volume
+	 * @param int      $timestamp
 	 */
-	public function __construct(string $id, Active $active, string $type, float $volume, int $timestamp)
+	public function __construct(string $id, Currency $currency, string $type, float $volume, int $timestamp)
 	{
 	    $this->id = $id;
-		$this->active = $active;
+		$this->currency = $currency;
 		$this->type = $type;
 		$this->volume = $volume;
 		$this->timestamp = $timestamp;
 	}
 
 	/**
-	 * @return Active
+	 * @return Currency
 	 */
-	public function getActive(): Active
+	public function getCurrency(): Currency
 	{
-		return $this->active;
+		return $this->currency;
 	}
 
     /**

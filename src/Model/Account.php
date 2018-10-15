@@ -28,6 +28,12 @@ class Account
         self::FEE_SELLER => 0
     );
 
+    /** @var Active[] */
+    private $actives = array();
+
+    /** @var Order[] */
+    private $orders = array();
+
     /**
      * @param array $access
      * @param array $fees
@@ -62,6 +68,45 @@ class Account
         }
 
         return 0;
+    }
+
+    /**
+     * @param Active $active
+     * @return bool
+     */
+    public function hasActive(Active $active): bool
+    {
+        return isset($this->actives[$active->getSymbol()]);
+    }
+
+    /**
+     * @param Active $active
+     * @return bool
+     */
+    public function addActive(Active $active): bool
+    {
+        if ($this->hasActive($active)) {
+            return false;
+        }
+
+        $this->actives[$active->getSymbol()] = $active;
+
+        return true;
+    }
+
+    /**
+     * @param Currency $currency
+     * @return null|Active
+     */
+    public function getActive(Currency $currency): ?Active
+    {
+        foreach ($this->actives as $active) {
+            if ($active->getCurrency() === $currency) {
+                return $active;
+            }
+        }
+
+        return null;
     }
 
     /**

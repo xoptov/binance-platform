@@ -109,4 +109,19 @@ class CurrencyPair
     {
         return self::STATUS_BREAK === $this->status;
     }
+
+    /**
+     * @param string $symbol
+     * @return null|Currency
+     */
+    public function getCurrency(string $symbol): ?Currency
+    {
+        if ($this->base->getSymbol() === $symbol) {
+            return $this->base;
+        } elseif ($this->quote->getSymbol() === $symbol) {
+            return $this->quote;
+        }
+
+        return null;
+    }
 }
