@@ -4,21 +4,33 @@ namespace Xoptov\BinancePlatform;
 
 use Binance\API;
 use Binance\RateLimiter;
+use React\EventLoop\Factory;
+use Ratchet\Client\Connector;
+use Ratchet\Client\WebSocket;
 use Xoptov\BinancePlatform\Model\Trade;
 use Xoptov\BinancePlatform\Model\Order;
 use Xoptov\BinancePlatform\Model\Active;
 use Xoptov\BinancePlatform\Model\Account;
+use Xoptov\BinancePlatform\Model\Commission;
 use Xoptov\BinancePlatform\Model\Transaction;
+use React\Socket\Connector as SocketConnector;
 use Xoptov\BinancePlatform\Model\CurrencyPair;
 use Xoptov\BinancePlatform\Model\TimeTrackAbleInterface;
+use Xoptov\BinancePlatform\Model\Event\Trade as TradeEvent;
 
 class Platform
 {
+    /** @var string */
+    private static $stream = "wss://stream.binance.com:9443/ws/";
+
     /** @var bool */
     private static $created = false;
 
     /** @var int */
     private static $limit = 500;
+
+    /** @var int */
+    private static $subscribes = 0;
 
     /** @var bool */
     private $initialized = false;
@@ -38,14 +50,11 @@ class Platform
     /** @var History */
     private $history;
 
-    /** @var Order[] */
-    private $orders = array();
-
     /**
      * @param int|null $limit
      * @return null|Platform
      */
-    public static function create(?int $limit = 500)
+    public static function create(?int $limit = 500): ?Platform
     {
         if (static::$created) {
             return null;
@@ -84,7 +93,7 @@ class Platform
             $this->loadAccountInfo();
 
             if (!$this->exchange->hasCurrencyPair($symbol)) {
-                throw new \InvalidArgumentException("Specified symbol dose not exist on exchange.");
+                throw new \InvalidArgumentException("Specified symbol dose not trade on exchange.");
             }
 
             $this->tradePair = $this->exchange->getCurrencyPair($symbol);
@@ -104,88 +113,59 @@ class Platform
 
         $this->initialized = true;
 
+        if (function_exists("onInit")) {
+            call_user_func("onInit", $this);
+        }
+
         return true;
     }
 
-    public function run()
+    public function run(): void
     {
         if (!$this->initialized) {
             throw new \RuntimeException("Platform must be initialized first.");
         }
 
-        //TODO: start event loop.
+        $loop = Factory::create();
+        $socketConnector = new SocketConnector($loop);
+        $clientConnector = new Connector($loop, $socketConnector);
+
+        // TODO: this code need refactoring.
+        // Subscription to websocket stream.
+        $clientConnector(self::$stream . strtolower($this->tradePair) . "@trade")->then(
+            function(WebSocket $ws) use ($loop){
+                $ws->on("message", function ($data) {
+                    $json = json_decode($data, true);
+                    $this->handleTrade($json);
+                });
+                $ws->on("close", function ($code = null, $reason = null) use ($loop) {
+                    if (--static::$subscribes === 0) {
+                        $loop->stop();
+                    }
+                });
+                static::$subscribes++;
+            },
+            function($e) use ($loop) {
+                if (--static::$subscribes === 0) {
+                    $loop->stop();
+                }
+            }
+        );
+
+        $loop->run();
+    }
+
+    /**
+     * @return Account
+     */
+    public function getAccount(): Account
+    {
+        return $this->account;
     }
 
     private function __construct()
     {
         static::$created = true;
-    }
-
-    /**
-     * @param int $id
-     * @return bool
-     */
-    private function hasOrder(int $id): bool
-    {
-        /** @var Order $order */
-        foreach ($this->orders as $order) {
-            if ($order->getId() === $id) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * @param int $id
-     * @return null|Order
-     */
-    private function getOrder(int $id): ?Order
-    {
-        /** @var Order $order */
-        foreach ($this->orders as $order) {
-            if ($order->getId() === $id) {
-                return $order;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param Order $order
-     * @return bool
-     */
-    private function addOrder(Order $order): bool
-    {
-        if ($this->hasOrder($order->getId())) {
-            return false;
-        }
-
-        $this->orders[] = $order;
-
-        return true;
-    }
-
-    /**
-     * @param Order $order
-     * @return bool
-     */
-    private function removeOrder(Order $order): bool
-    {
-        /**
-         * @var int   $key
-         * @var Order $order
-         */
-        foreach ($this->orders as $key => $item) {
-            if ($order === $item) {
-                unset($this->orders[$key]);
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -241,7 +221,7 @@ class Platform
 
             foreach ($result as $item) {
 
-                if ($this->hasOrder($item["orderId"])) {
+                if ($this->account->hasOrder($item["orderId"])) {
                     continue;
                 }
 
@@ -251,6 +231,7 @@ class Platform
                     throw new \RuntimeException("Unknown symbol in order.");
                 }
 
+                // Not load not actual orders.
                 if (!in_array($item["status"], [Order::STATUS_NEW, Order::STATUS_PARTIALLY_FILLED])) {
                     continue;
                 }
@@ -260,7 +241,7 @@ class Platform
                     $item["time"], $item["updateTime"]
                 );
 
-                $this->addOrder($order);
+                $this->account->addOrder($order);
             }
 
             if (isset($item) && key_exists("orderId", $item)) {
@@ -281,7 +262,7 @@ class Platform
             return;
         }
 
-        $actualVolume = $active->getVolume();
+//        $actualVolume = $active->getVolume();
         $active->flush();
 
         while ($trades = $this->history->getTrades()) {
@@ -321,18 +302,54 @@ class Platform
         }
     }
 
-    private function handleTick(array $message): void
+    /**
+     * @param array $data
+     */
+    private function handleTrade(array $data): void
     {
-        //TODO: need implement.
+        $currencyPair = $this->exchange->getCurrencyPair($data['s']);
+
+        if (!$currencyPair) {
+            throw new \RuntimeException("Currency with symbol \"{$data['s']}\" not found.");
+        }
+
+        $event = new TradeEvent($currencyPair, $data);
+
+        if ($this->account->hasOrder($event->getBuyerOrderId())) {
+            $this->handlePurchase($event);
+        } elseif ($this->account->hasOrder($event->getSellerOrderId())) {
+            $this->handleSale($event);
+        }
+
+        if (function_exists("onTrade")) {
+            call_user_func("onTrade", $event, $this);
+        }
     }
 
-    private function handleTrade(array $message): void
+    /**
+     * @param TradeEvent $event
+     */
+    private function handlePurchase(TradeEvent $event)
     {
-        //TODO: need implement.
+        if ($event->isBuyerMaker()) {
+            $fee = $this->account->getFee(Account::FEE_MAKER);
+        } else {
+            $fee = $this->account->getFee(Account::FEE_TAKER);
+        }
+
+        $commissionValue = $event->getVolume() * ($fee / 100) / 100;
+        $commission = new Commission($event->getBase(), $commissionValue);
+
+        $trade = new Trade($event->getTradeId(), $event->getCurrencyPair(), Trade::TYPE_BUY, $event->getPrice(), $event->getVolume(), $commission, $event->isBuyerMaker(), $event->getTimestamp());
+
+        $this->account->trade($trade);
     }
 
-    private function handleBookEvent(array $message): void
+    /**
+     * @param TradeEvent $event
+     */
+    private function handleSale(TradeEvent $event)
     {
-        //TODO: need implement.
+        //TODO: implementing logic.
     }
 }

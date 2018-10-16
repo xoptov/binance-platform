@@ -117,19 +117,39 @@ class Order
 
         return $trades;
     }
+
+    /**
+     * @param Trade $trade
+     * @return bool
+     */
+    public function hasTrade(Trade $trade): bool
+    {
+        return isset($this->trades[$trade->getId()]);
+    }
+
+    /**
+     * @param Trade $trade
+     * @return bool
+     */
+    public function addTrade(Trade $trade): bool
+    {
+	    //TODO: I don't know. Need think.
+
+        return true;
+    }
 	
 	/**
-	 * @return int
+	 * @return string
 	 */
-	public function getSide(): int
+	public function getSide(): string
 	{
 		return $this->side;
 	}
 	
 	/**
-	 * @return int
+	 * @return string
 	 */
-	public function getStatus(): int
+	public function getStatus(): string
 	{
 		return $this->status;
 	}

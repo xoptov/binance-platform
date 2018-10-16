@@ -19,6 +19,7 @@
     },
     "require": {
         "php": "^7.1",
+        "ext-json": "*",
         "symfony/console": "^4.1",
         "jaggedsoft/php-binance-api": "^0.4.6"
     }

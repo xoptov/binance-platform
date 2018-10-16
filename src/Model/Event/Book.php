@@ -1,8 +1,11 @@
 <?php
 
-namespace Xoptov\BinancePlatform\Model;
+namespace Xoptov\BinancePlatform\Model\Event;
 
-class BookEvent
+use Xoptov\BinancePlatform\Model\Rate;
+use Xoptov\BinancePlatform\Model\CurrencyPair;
+
+class Book
 {
     const TYPE_UPDATE = "update";
 

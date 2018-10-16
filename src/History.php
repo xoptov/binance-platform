@@ -103,7 +103,7 @@ class History
 
             $commission = new Commission($currency, $item["commission"]);
 
-            $trades[] = new Trade($item["id"], $item["orderId"], $this->tradePair, $type, $item["price"], $item["qty"], $commission, $item["isMaker"], $item["time"]);
+            $trades[] = new Trade($item["id"], $this->tradePair, $type, $item["price"], $item["qty"], $commission, $item["isMaker"], $item["time"]);
             $this->tradeLastId = $item["id"];
         }
 

@@ -14,9 +14,6 @@ class Trade implements TimeTrackAbleInterface
 	/** @var CurrencyPair */
 	private $currencyPair;
 
-	/** @var mixed */
-	private $order;
-
 	/** @var Commission */
 	private $commission;
 
@@ -25,7 +22,6 @@ class Trade implements TimeTrackAbleInterface
 
 	/**
 	 * @param int          $id
-     * @param mixed        $order
      * @param CurrencyPair $currencyPair
 	 * @param string       $type
 	 * @param float        $price
@@ -34,10 +30,9 @@ class Trade implements TimeTrackAbleInterface
      * @param bool         $maker
 	 * @param int          $timestamp
 	 */
-	public function __construct(int $id, $order, CurrencyPair $currencyPair, string $type, float $price, float $volume, Commission $commission, bool $maker, int $timestamp)
+	public function __construct(int $id, CurrencyPair $currencyPair, string $type, float $price, float $volume, Commission $commission, bool $maker, int $timestamp)
 	{
 		$this->id = $id;
-		$this->order = $order;
 		$this->currencyPair = $currencyPair;
 		$this->type = $type;
 		$this->price = $price;
@@ -48,54 +43,35 @@ class Trade implements TimeTrackAbleInterface
 	}
 
     /**
-     * @return CurrencyPair
+     * @return float
      */
-    public function getCurrencyPair(): CurrencyPair
+	public function getTotal(): float
     {
-        return $this->currencyPair;
-    }
-
-    /**
-     * @return mixed
-     */
-	public function getOrder()
-    {
-        return $this->order;
-    }
-
-    /**
-     * @param mixed $order
-     * @return Trade
-     */
-    public function setOrder($order): self
-    {
-        $this->order = $order;
-
-        return $this;
-    }
-
-    /**
-     * @return Currency
-     */
-    public function getCommissionCurrency(): Currency
-    {
-        return $this->commission->getCurrency();
-    }
-
-    /**
-     * @return string
-     */
-    public function getCommissionSymbol(): string
-    {
-        return $this->commission->getSymbol();
+        return $this->price * $this->volume;
     }
 
     /**
      * @return float
      */
-    public function getCommissionVolume(): float
+    public function getActualVolume(): float
     {
-        return $this->commission->getVolume();
+        if ($this->isBuy()) {
+            return $this->volume - $this->commission->getVolume();
+        }
+
+        return $this->volume;
+    }
+
+    /**
+     * @return float
+     */
+    public function getActualTotal(): float
+    {
+        if ($this->isSell()) {
+            return $this->getTotal() - $this->commission->getVolume();
+        }
+
+        return $this->getTotal();
     }
 
     /**

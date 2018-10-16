@@ -110,6 +110,67 @@ class Account
     }
 
     /**
+     * @param int $id
+     * @return bool
+     */
+    public function hasOrder(int $id): bool
+    {
+        return isset($this->orders[$id]);
+    }
+
+    /**
+     * @param int $id
+     * @return null|Order
+     */
+    public function getOrder(int $id): ?Order
+    {
+        if ($this->hasOrder($id)) {
+            return $this->orders[$id];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param Order $order
+     * @return bool
+     */
+    public function addOrder(Order $order): bool
+    {
+        if ($this->hasOrder($order->getId())) {
+            return false;
+        }
+
+        $this->orders[$order->getId()] = $order;
+
+        return true;
+    }
+
+    /**
+     * @param Order $order
+     * @return bool
+     */
+    public function removeOrder(Order $order): bool
+    {
+        if ($this->hasOrder($order->getId())) {
+            unset($this->orders[$order->getId()]);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param Trade $trade
+     * @return bool
+     */
+    public function trade(Trade $trade): bool
+    {
+        //TODO: need implement.
+
+        return true;
+    }
+
+    /**
      * @param array $access
      * @return Account
      */

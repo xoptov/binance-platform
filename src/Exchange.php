@@ -149,7 +149,7 @@ class Exchange
                 $this->addCurrency($quote);
             }
 
-            $currencyPair = new CurrencyPair($base, $quote, $item["status"], $item["orderTypes"], $item["icebergAllowed"]);
+            $currencyPair = new CurrencyPair($base, $quote, $item["status"], $item["orderTypes"], $item["icebergAllowed"], $item["filters"]);
             $this->addCurrencyPair($currencyPair);
         }
     }

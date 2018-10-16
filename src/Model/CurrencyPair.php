@@ -22,20 +22,26 @@ class CurrencyPair
     /** @var bool */
     private $icebergAllowed;
 
+    /** @var array */
+    private $filters = array();
+
     /**
      * @param Currency $base
      * @param Currency $quote
      * @param string   $status
      * @param array    $orderTypes
      * @param bool     $icebergAllowed
+     * @param array    $filters
      */
-    public function __construct(Currency $base, Currency $quote, string $status, array $orderTypes, bool $icebergAllowed)
+    public function __construct(Currency $base, Currency $quote, string $status, array $orderTypes, bool $icebergAllowed, array $filters)
     {
         $this->base = $base;
         $this->quote = $quote;
         $this->status = $status;
         $this->orderTypes = $orderTypes;
         $this->icebergAllowed = $icebergAllowed;
+
+        $this->setFilters($filters);
     }
 
     /**
@@ -95,6 +101,29 @@ class CurrencyPair
     }
 
     /**
+     * @param string $filterType
+     * @return bool
+     */
+    public function hasFilter(string $filterType): bool
+    {
+        return isset($this->filters[$filterType]);
+    }
+
+    /**
+     * @param string $filterType
+     * @return array|null
+     */
+    public function getFilter(string $filterType): ?array
+    {
+
+    }
+
+    public function getFilterField(string $filterType, string $field)
+    {
+
+    }
+
+    /**
      * @return bool
      */
     public function isTrading(): bool
@@ -110,6 +139,7 @@ class CurrencyPair
         return self::STATUS_BREAK === $this->status;
     }
 
+
     /**
      * @param string $symbol
      * @return null|Currency
@@ -123,5 +153,27 @@ class CurrencyPair
         }
 
         return null;
+    }
+
+    /**
+     * @param array $filters
+     */
+    private function setFilters(array $filters): void
+    {
+        foreach ($filters as $item) {
+            if ($this->hasFilter($item["filterType"])) {
+                continue;
+            }
+
+            $filterType = $item["filterType"];
+            $this->filters[$filterType] = [];
+
+            foreach ($item as $field => $value) {
+                if ("filterType" === $field) {
+                    continue;
+                }
+                $this->filters[$filterType][$field] = $value;
+            }
+        }
     }
 }
