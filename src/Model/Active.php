@@ -104,14 +104,7 @@ class Active
      */
     public function hasTrade(Trade $trade): bool
     {
-        /** @var Trade $item */
-        foreach ($this->trades as $item) {
-            if ($trade->getId() === $item->getId()) {
-                return true;
-            }
-        }
-
-        return false;
+        return isset($this->trades[$trade->getId()]);
     }
 
     /**
@@ -154,12 +147,12 @@ class Active
         }
 
         if ($trade->isSell()) {
-            $this->sell($trade);
+            $this->sale($trade);
         } else {
-            $this->buy($trade);
+            $this->purchase($trade);
         }
 
-        $this->trades[] = $trade;
+        $this->trades[$trade->getId()] = $trade;
 
         return true;
     }
@@ -203,6 +196,36 @@ class Active
     }
 
     /**
+     * @param float $value
+     */
+    public function increase(float $value): void
+    {
+        $this->volume += $value;
+    }
+
+    /**
+     * @param float $value
+     */
+    public function decrease(float $value): void
+    {
+        if ($this->getVolume() < $value) {
+            throw new \RuntimeException("Insufficient funds.");
+        }
+
+        $this->volume -= $value;
+
+        if (empty($this->position)) {
+            return;
+        }
+
+        $this->position->decrease($value);
+
+        if ($this->position->getVolume() <= 0.0) {
+            $this->position = null;
+        }
+    }
+
+    /**
      * @param Transaction $transaction
      */
     private function deposit(Transaction $transaction): void
@@ -221,51 +244,21 @@ class Active
     /**
      * @param Trade $trade
      */
-    private function buy(Trade $trade): void
+    private function purchase(Trade $trade): void
     {
         if (empty($this->position)) {
             $this->position = new Position();
         }
 
         $this->position->purchase($trade);
-        $this->increase($trade->getVolume() - $trade->getCommissionVolume());
+        $this->increase($trade->getActualVolume());
     }
 
     /**
      * @param Trade $trade
      */
-    private function sell(Trade $trade): void
+    private function sale(Trade $trade): void
     {
         $this->decrease($trade->getVolume());
-    }
-
-    /**
-     * @param float $value
-     */
-    private function increase(float $value): void
-    {
-        $this->volume += $value;
-    }
-
-    /**
-     * @param float $value
-     */
-    private function decrease(float $value): void
-    {
-        if ($this->getVolume() < $value) {
-            throw new \RuntimeException("Insufficient funds.");
-        }
-
-        $this->volume -= $value;
-
-        if (empty($this->position)) {
-            return;
-        }
-
-        $this->position->decrease($value);
-
-        if ($this->position->getVolume() <= 0.0) {
-            $this->position = null;
-        }
     }
 }

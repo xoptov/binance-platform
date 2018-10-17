@@ -121,8 +121,50 @@ class Order
     /**
      * @param Trade $trade
      * @return bool
+     * @todo Refactoring with better validation.
      */
-    public function hasTrade(Trade $trade): bool
+    public function fill(Trade $trade): bool
+    {
+        if ($this->getCurrencyPair() !== $trade->getCurrencyPair()) {
+            throw new \RuntimeException("Unsupported currency pair.");
+        }
+
+        if ($trade->getType() !== $this->getSide()) {
+            throw new \RuntimeException("Unsupported trade operation.");
+        }
+
+        if (!$this->addTrade($trade)) {
+            return false;
+        }
+
+        if ($this->getVolume() == $this->getFilledVolume()) {
+            $this->status = Order::STATUS_FILLED;
+        } else {
+            $this->status = Order::STATUS_PARTIALLY_FILLED;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return float
+     */
+    public function getFilledVolume(): float
+    {
+        $filledVolume = 0.0;
+
+        foreach ($this->trades as $trade) {
+            $filledVolume += $trade->getVolume();
+        }
+
+        return $filledVolume;
+    }
+
+    /**
+     * @param Trade $trade
+     * @return bool
+     */
+    private function hasTrade(Trade $trade): bool
     {
         return isset($this->trades[$trade->getId()]);
     }
@@ -131,9 +173,13 @@ class Order
      * @param Trade $trade
      * @return bool
      */
-    public function addTrade(Trade $trade): bool
+    private function addTrade(Trade $trade): bool
     {
-	    //TODO: I don't know. Need think.
+        if ($this->hasTrade($trade)) {
+            return false;
+        }
+
+        $this->trades[$trade->getId()] = $trade;
 
         return true;
     }
@@ -169,4 +215,12 @@ class Order
 	{
 		return $this->updatedAt;
 	}
+
+    /**
+     * @return bool
+     */
+	public function isFilled(): bool
+    {
+        return self::STATUS_FILLED === $this->status;
+    }
 }

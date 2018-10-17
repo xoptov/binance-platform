@@ -3,10 +3,13 @@
 namespace Xoptov\BinancePlatform\Model\Event;
 
 use Xoptov\BinancePlatform\Model\Currency;
+use Xoptov\BinancePlatform\Model\RateTrait;
 use Xoptov\BinancePlatform\Model\CurrencyPair;
 
 class Trade
 {
+    use RateTrait;
+
     private static $number = 0;
 
     /** @var int */
@@ -17,12 +20,6 @@ class Trade
 
     /** @var int */
     private $tradeId;
-
-    /** @var float */
-    private $price;
-
-    /** @var float */
-    private $volume;
 
     /** @var int */
     private $buyerOrderId;
@@ -101,17 +98,17 @@ class Trade
     /**
      * @return Currency
      */
-    public function getBase(): Currency
+    public function getBaseCurrency(): Currency
     {
-        return $this->currencyPair->getBase();
+        return $this->currencyPair->getBaseCurrency();
     }
 
     /**
      * @return Currency
      */
-    public function getQuote(): Currency
+    public function getQuoteCurrency(): Currency
     {
-        return $this->currencyPair->getQuote();
+        return $this->currencyPair->getQuoteCurrency();
     }
 
     /**
@@ -120,22 +117,6 @@ class Trade
     public function getTradeId(): int
     {
         return $this->tradeId;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPrice(): float
-    {
-        return $this->price;
-    }
-
-    /**
-     * @return float
-     */
-    public function getVolume(): float
-    {
-        return $this->volume;
     }
 
     /**

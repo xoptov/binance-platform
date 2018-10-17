@@ -71,12 +71,12 @@ class Account
     }
 
     /**
-     * @param Active $active
+     * @param string $symbol
      * @return bool
      */
-    public function hasActive(Active $active): bool
+    public function hasActive(string $symbol): bool
     {
-        return isset($this->actives[$active->getSymbol()]);
+        return isset($this->actives[$symbol]);
     }
 
     /**
@@ -95,15 +95,13 @@ class Account
     }
 
     /**
-     * @param Currency $currency
+     * @param string $symbol
      * @return null|Active
      */
-    public function getActive(Currency $currency): ?Active
+    public function getActive(string $symbol): ?Active
     {
-        foreach ($this->actives as $active) {
-            if ($active->getCurrency() === $currency) {
-                return $active;
-            }
+        if ($this->hasActive($symbol)) {
+            return $this->actives[$symbol];
         }
 
         return null;
@@ -161,13 +159,68 @@ class Account
 
     /**
      * @param Trade $trade
-     * @return bool
      */
-    public function trade(Trade $trade): bool
+    public function purchase(Trade $trade): void
     {
-        //TODO: need implement.
+        $order = $this->getOrder($trade->getOrderId());
 
-        return true;
+        if (!$order) {
+            throw new \RuntimeException("Order not found.");
+        }
+
+        if (!$order->fill($trade)) {
+            return;
+        }
+
+        if ($order->isFilled()) {
+            $this->removeOrder($order);
+        }
+
+        $baseActive = $this->getActive($trade->getBaseCurrency());
+        $quoteActive = $this->getActive($trade->getQuoteCurrency());
+
+        if (!$baseActive) {
+            $baseActive = new Active($trade->getBaseCurrency());
+        }
+
+        if (!$baseActive->trade($trade)) {
+            return;
+        }
+
+        $quoteActive->decrease($trade->getActualTotal());
+    }
+
+    /**
+     * @param Trade $trade
+     */
+    public function sale(Trade $trade): void
+    {
+        $order = $this->getOrder($trade->getOrderId());
+
+        if (!$order) {
+            throw new \RuntimeException("Order not found.");
+        }
+
+        if (!$order->fill($trade)) {
+            return;
+        }
+
+        if ($order->isFilled()) {
+            $this->removeOrder($order);
+        }
+
+        $baseActive = $this->getActive($trade->getBaseCurrency());
+        $quoteActive = $this->getActive($trade->getQuoteCurrency());
+
+        if (!$quoteActive) {
+            $quoteActive = new Active($trade->getQuoteCurrency());
+        }
+
+        if (!$baseActive->trade($trade)) {
+            return;
+        }
+
+        $quoteActive->increase($trade->getActualTotal());
     }
 
     /**

@@ -163,6 +163,37 @@ class Platform
         return $this->account;
     }
 
+    /**
+     * @param string $type
+     * @return float
+     */
+    public function getAccountFee(string $type): float
+    {
+        return $this->account->getFee($type);
+    }
+
+    /**
+     * @param int $orderId
+     * @return bool
+     */
+    public function isMyOrder(int $orderId): bool
+    {
+        return $this->account->hasOrder($orderId);
+    }
+
+    /**
+     * @param float $volume
+     * @param int   $fee
+     * @return float
+     */
+    public function calculateCommissionVolume(float $volume, int $fee): float
+    {
+        return $volume * ($fee / 100) / 100;
+    }
+
+    /**
+     * Platform constructor.
+     */
     private function __construct()
     {
         static::$created = true;
@@ -256,7 +287,7 @@ class Platform
      */
     private function calculatePosition(): void
     {
-        $active = $this->account->getActive($this->tradePair->getBase());
+        $active = $this->account->getActive($this->tradePair->getBaseCurrency());
 
         if (!$active) {
             return;
@@ -315,9 +346,9 @@ class Platform
 
         $event = new TradeEvent($currencyPair, $data);
 
-        if ($this->account->hasOrder($event->getBuyerOrderId())) {
+        if ($this->isMyOrder($event->getBuyerOrderId())) {
             $this->handlePurchase($event);
-        } elseif ($this->account->hasOrder($event->getSellerOrderId())) {
+        } elseif ($this->isMyOrder($event->getSellerOrderId())) {
             $this->handleSale($event);
         }
 
@@ -329,27 +360,50 @@ class Platform
     /**
      * @param TradeEvent $event
      */
-    private function handlePurchase(TradeEvent $event)
+    private function handlePurchase(TradeEvent $event): void
     {
         if ($event->isBuyerMaker()) {
-            $fee = $this->account->getFee(Account::FEE_MAKER);
+            $fee = $this->getAccountFee(Account::FEE_MAKER);
         } else {
-            $fee = $this->account->getFee(Account::FEE_TAKER);
+            $fee = $this->getAccountFee(Account::FEE_TAKER);
         }
 
-        $commissionValue = $event->getVolume() * ($fee / 100) / 100;
-        $commission = new Commission($event->getBase(), $commissionValue);
+        $commission = new Commission($event->getBaseCurrency(), $this->calculateCommissionVolume($event->getVolume(), $fee));
 
-        $trade = new Trade($event->getTradeId(), $event->getCurrencyPair(), Trade::TYPE_BUY, $event->getPrice(), $event->getVolume(), $commission, $event->isBuyerMaker(), $event->getTimestamp());
+        $trade = $this->createTrade($event, Trade::TYPE_BUY, $commission, $event->isBuyerMaker());
+        $trade->setOrderId($event->getBuyerOrderId());
 
-        $this->account->trade($trade);
+        $this->account->purchase($trade);
     }
 
     /**
      * @param TradeEvent $event
      */
-    private function handleSale(TradeEvent $event)
+    private function handleSale(TradeEvent $event): void
     {
-        //TODO: implementing logic.
+        if ($event->isBuyerMaker()) {
+            $fee = $this->getAccountFee(Account::FEE_TAKER);
+        } else {
+            $fee = $this->getAccountFee(Account::FEE_MAKER);
+        }
+
+        $commission = new Commission($event->getQuoteCurrency(), $this->calculateCommissionVolume($event->getTotal(), $fee));
+
+        $trade = $this->createTrade($event, Trade::TYPE_SELL, $commission, !$event->isBuyerMaker());
+        $trade->setOrderId($event->getSellerOrderId());
+
+        $this->account->sale($trade);
+    }
+
+    /**
+     * @param TradeEvent $event
+     * @param string     $type
+     * @param Commission $commission
+     * @param bool       $isMaker
+     * @return Trade
+     */
+    private function createTrade(TradeEvent $event, string $type, Commission $commission, bool $isMaker): Trade
+    {
+        return new Trade($event->getTradeId(), $event->getCurrencyPair(), $type, $event->getPrice(), $event->getVolume(), $commission, $isMaker, $event->getTimestamp());
     }
 }

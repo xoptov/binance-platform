@@ -55,7 +55,7 @@ class CurrencyPair
     /**
      * @return Currency
      */
-    public function getBase(): Currency
+    public function getBaseCurrency(): Currency
     {
         return $this->base;
     }
@@ -63,7 +63,7 @@ class CurrencyPair
     /**
      * @return Currency
      */
-    public function getQuote(): Currency
+    public function getQuoteCurrency(): Currency
     {
         return $this->quote;
     }
@@ -111,16 +111,16 @@ class CurrencyPair
 
     /**
      * @param string $filterType
-     * @return array|null
+     * @param string $field
+     * @return mixed
      */
-    public function getFilter(string $filterType): ?array
+    public function getFilter(string $filterType, string $field)
     {
+        if (isset($this->filters[$filterType][$field])) {
+            $this->filters[$filterType][$field];
+        }
 
-    }
-
-    public function getFilterField(string $filterType, string $field)
-    {
-
+        return null;
     }
 
     /**

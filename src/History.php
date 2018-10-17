@@ -185,7 +185,7 @@ class History
      */
     private function loadTransactions(): void
     {
-        $currency = $this->tradePair->getBase();
+        $currency = $this->tradePair->getBaseCurrency();
         $result = $this->api->depositHistory($currency);
 
         if (!$result["success"]) {

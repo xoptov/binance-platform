@@ -11,6 +11,9 @@ class Trade implements TimeTrackAbleInterface
 	const TYPE_BUY  = "BUY";
 	const TYPE_SELL = "SELL";
 
+	/** @var int */
+	private $orderId;
+
 	/** @var CurrencyPair */
 	private $currencyPair;
 
@@ -41,6 +44,49 @@ class Trade implements TimeTrackAbleInterface
 		$this->maker = $maker;
 		$this->timestamp = $timestamp;
 	}
+
+    /**
+     * @return int|null
+     */
+	public function getOrderId(): ?int
+    {
+        return $this->orderId;
+    }
+
+    /**
+     * @param int $orderId
+     * @return Trade
+     */
+    public function setOrderId(int $orderId): self
+    {
+        $this->orderId = $orderId;
+
+        return $this;
+    }
+
+    /**
+     * @return CurrencyPair
+     */
+	public function getCurrencyPair(): CurrencyPair
+    {
+        return $this->currencyPair;
+    }
+
+    /**
+     * @return Currency
+     */
+    public function getBaseCurrency(): Currency
+    {
+        return $this->currencyPair->getBaseCurrency();
+    }
+
+    /**
+     * @return Currency
+     */
+    public function getQuoteCurrency(): Currency
+    {
+        return $this->currencyPair->getQuoteCurrency();
+    }
 
     /**
      * @return float

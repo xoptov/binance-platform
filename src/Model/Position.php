@@ -20,7 +20,7 @@ class Position
             return false;
         }
 
-        $purchase = new Rate($trade->getPrice(), $trade->getVolume() - $trade->getCommissionVolume());
+        $purchase = new Rate($trade->getPrice(), $trade->getActualVolume());
 
         $this->volume += $purchase->getVolume();
         $this->purchases[$trade->getId()] = $purchase;
