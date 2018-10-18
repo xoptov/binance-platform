@@ -23,29 +23,33 @@ class Exchange
 
     /**
      * @param RateLimiter $api
+     * @param bool|null   $init
      * @return null|Exchange
      * @throws \Exception
      */
-    public static function create(RateLimiter $api): ?self
+    public static function create(RateLimiter $api, ?bool $init = true): ?self
     {
         if (self::$created) {
             return null;
         }
 
-        return new self($api);
+        return new self($api, $init);
     }
 
     /**
      * @param RateLimiter $api
+     * @param bool        $init
      * @throws \Exception
      */
-    private function __construct(RateLimiter $api)
+    private function __construct(RateLimiter $api, bool $init)
     {
+        self::$created = true;
+
         $this->api = $api;
 
-        $this->loadInformation();
-
-        self::$created = true;
+        if ($init) {
+            $this->loadInformation();
+        }
     }
 
     /**

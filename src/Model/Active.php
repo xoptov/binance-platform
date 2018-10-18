@@ -25,6 +25,9 @@ class Active
     /** @var Trade[] */
     private $trades = array();
 
+    /** @var Order[] */
+    private $asks = array();
+
     /**
      * @param Currency $currency
      * @param float    $volume
@@ -81,6 +84,28 @@ class Active
     public function getSymbol(): string
     {
         return $this->currency->getSymbol();
+    }
+
+    /**
+     * @return float
+     */
+    public function getLockedVolume(): float
+    {
+        $total = 0.0;
+
+        foreach ($this->asks as $ask) {
+            $total += $ask->getVolume();
+        }
+
+        return $total;
+    }
+
+    /**
+     * @return float
+     */
+    public function getFreeVolume(): float
+    {
+        return $this->getVolume() - $this->getLockedVolume();
     }
 
     /**
@@ -223,6 +248,57 @@ class Active
         if ($this->position->getVolume() <= 0.0) {
             $this->position = null;
         }
+    }
+
+    /**
+     * @param Order $order
+     * @return bool
+     */
+    public function hasAsk(Order $order): bool
+    {
+        return isset($this->asks[$order->getId()]);
+    }
+
+    /**
+     * @param Order $order
+     * @return bool
+     */
+    public function addAsk(Order $order): bool
+    {
+        if (!$order->isAsk()) {
+            return false;
+        }
+
+        if ($order->getBaseCurrency() !== $this->currency) {
+            return false;
+        }
+
+        if ($this->hasAsk($order)) {
+            return false;
+        }
+
+        $this->asks[$order->getId()] = $order;
+
+        return false;
+    }
+
+    /**
+     * @param Order $order
+     * @return bool
+     */
+    public function removeAsk(Order $order): bool
+    {
+        if (!$order->isAsk()) {
+            return false;
+        }
+
+        if (!$this->hasAsk($order)) {
+            return false;
+        }
+
+        unset($this->asks[$order->getId()]);
+
+        return true;
     }
 
     /**

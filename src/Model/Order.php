@@ -105,6 +105,22 @@ class Order
 	}
 
     /**
+     * @return Currency
+     */
+	public function getBaseCurrency(): Currency
+    {
+        return $this->currencyPair->getBaseCurrency();
+    }
+
+    /**
+     * @return Currency
+     */
+    public function getQuoteCurrency(): Currency
+    {
+        return $this->currencyPair->getQuoteCurrency();
+    }
+
+    /**
      * @return Trade[]
      */
 	public function getTrades(): array
@@ -222,5 +238,21 @@ class Order
 	public function isFilled(): bool
     {
         return self::STATUS_FILLED === $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAsk(): bool
+    {
+        return self::SIDE_SELL === $this->side;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBid(): bool
+    {
+        return self::SIDE_BUY === $this->side;
     }
 }

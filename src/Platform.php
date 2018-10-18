@@ -11,6 +11,7 @@ use Xoptov\BinancePlatform\Model\Trade;
 use Xoptov\BinancePlatform\Model\Order;
 use Xoptov\BinancePlatform\Model\Active;
 use Xoptov\BinancePlatform\Model\Account;
+use Xoptov\BinancePlatform\Model\Currency;
 use Xoptov\BinancePlatform\Model\Commission;
 use Xoptov\BinancePlatform\Model\Transaction;
 use React\Socket\Connector as SocketConnector;
@@ -89,19 +90,19 @@ class Platform
 
             $this->exchange = Exchange::create($this->api);
 
-            // Loading account information.
-            $this->loadAccountInfo();
-
             if (!$this->exchange->hasCurrencyPair($symbol)) {
                 throw new \InvalidArgumentException("Specified symbol dose not trade on exchange.");
             }
 
             $this->tradePair = $this->exchange->getCurrencyPair($symbol);
 
+            // Loading account information.
+            $this->loadAccountInfo();
+
             $this->history = History::create($this->tradePair, $this->api, static::$limit);
 
-            // Calculating position for trade base active.
-            $this->calculatePosition();
+            // Loading and calculate position for trade base active.
+            $this->loadPosition();
 
             // Loading open account orders.
             $this->loadOrders();
@@ -161,6 +162,33 @@ class Platform
     public function getAccount(): Account
     {
         return $this->account;
+    }
+
+    /**
+     * @param int $orderId
+     * @return bool
+     */
+    public function hasOrder(int $orderId): bool
+    {
+        return $this->account->hasOrder($orderId);
+    }
+
+    /**
+     * @param string $symbol
+     * @return null|CurrencyPair
+     */
+    public function getCurrencyPair(string $symbol): ?CurrencyPair
+    {
+        return $this->exchange->getCurrencyPair($symbol);
+    }
+
+    /**
+     * @param string $symbol
+     * @return null|Currency
+     */
+    public function getCurrency(string $symbol): ?Currency
+    {
+        return $this->exchange->getCurrency($symbol);
     }
 
     /**
@@ -252,11 +280,11 @@ class Platform
 
             foreach ($result as $item) {
 
-                if ($this->account->hasOrder($item["orderId"])) {
+                if ($this->hasOrder($item["orderId"])) {
                     continue;
                 }
 
-                $currencyPair = $this->exchange->getCurrencyPair($item["symbol"]);
+                $currencyPair = $this->getCurrencyPair($item["symbol"]);
 
                 if (!$currencyPair) {
                     throw new \RuntimeException("Unknown symbol in order.");
@@ -285,7 +313,7 @@ class Platform
     /**
      * @throws \Exception
      */
-    private function calculatePosition(): void
+    private function loadPosition(): void
     {
         $active = $this->account->getActive($this->tradePair->getBaseCurrency());
 
