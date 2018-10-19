@@ -19,6 +19,9 @@ class Active
     /** @var double */
     private $volume;
 
+    /** @var double */
+    private $actualVolume = 0.0;
+
     /** @var Transaction[] */
     private $transactions = array();
 
@@ -182,11 +185,6 @@ class Active
         return true;
     }
 
-    public function flush(): void
-    {
-        $this->volume = 0.0;
-    }
-
     /**
      * @param Active $other
      * @return bool
@@ -299,6 +297,18 @@ class Active
         unset($this->asks[$order->getId()]);
 
         return true;
+    }
+
+    public function beginCalculatePosition(): void
+    {
+        $this->actualVolume = $this->volume;
+        $this->volume = 0.0;
+    }
+
+    public function endCalculatePosition(): void
+    {
+        $this->volume = $this->actualVolume;
+        $this->volume = 0.0;
     }
 
     /**

@@ -18,6 +18,7 @@ use React\Socket\Connector as SocketConnector;
 use Xoptov\BinancePlatform\Model\CurrencyPair;
 use Xoptov\BinancePlatform\Model\TimeTrackAbleInterface;
 use Xoptov\BinancePlatform\Model\Event\Trade as TradeEvent;
+use Xoptov\BinancePlatform\Model\Request\Trade as TradeRequest;
 
 class Platform
 {
@@ -132,7 +133,7 @@ class Platform
         $clientConnector = new Connector($loop, $socketConnector);
 
         // TODO: this code need refactoring.
-        // Subscription to websocket stream.
+        // Subscription to WebSocket stream.
         $clientConnector(self::$stream . strtolower($this->tradePair) . "@trade")->then(
             function(WebSocket $ws) use ($loop){
                 $ws->on("message", function ($data) {
@@ -140,16 +141,11 @@ class Platform
                     $this->handleTrade($json);
                 });
                 $ws->on("close", function ($code = null, $reason = null) use ($loop) {
-                    if (--static::$subscribes === 0) {
-                        $loop->stop();
-                    }
+                    $loop->stop();
                 });
-                static::$subscribes++;
             },
             function($e) use ($loop) {
-                if (--static::$subscribes === 0) {
-                    $loop->stop();
-                }
+                $loop->stop();
             }
         );
 
@@ -217,6 +213,14 @@ class Platform
     public function calculateCommissionVolume(float $volume, int $fee): float
     {
         return $volume * ($fee / 100) / 100;
+    }
+
+    /**
+     * @param TradeRequest $tradeRequest
+     */
+    public function orderSend(TradeRequest $tradeRequest)
+    {
+        //TODO: need implement this logic.
     }
 
     /**
@@ -295,10 +299,7 @@ class Platform
                     continue;
                 }
 
-                $order = new Order($item["orderId"], $currencyPair, $item["type"], $item["side"], $item["status"],
-                    $item["price"], $item["origQty"], $item["stopPrice"], $item["executedQty"], $item["icebergQty"],
-                    $item["time"], $item["updateTime"]
-                );
+                $order = $this->createOrder($currencyPair, $item);
 
                 $this->account->addOrder($order);
             }
@@ -321,8 +322,7 @@ class Platform
             return;
         }
 
-//        $actualVolume = $active->getVolume();
-        $active->flush();
+        $active->beginCalculatePosition();
 
         while ($trades = $this->history->getTrades()) {
 
@@ -359,6 +359,8 @@ class Platform
                 }
             }
         }
+
+        $active->endCalculatePosition();
     }
 
     /**
@@ -433,5 +435,18 @@ class Platform
     private function createTrade(TradeEvent $event, string $type, Commission $commission, bool $isMaker): Trade
     {
         return new Trade($event->getTradeId(), $event->getCurrencyPair(), $type, $event->getPrice(), $event->getVolume(), $commission, $isMaker, $event->getTimestamp());
+    }
+
+    /**
+     * @param CurrencyPair $currencyPair
+     * @param array        $data
+     * @return Order
+     */
+    private function createOrder(CurrencyPair $currencyPair, array $data): Order
+    {
+        return new Order($data["orderId"], $currencyPair, $data["type"], $data["side"], $data["status"],
+            $data["price"], $data["origQty"], $data["stopPrice"], $data["executedQty"], $data["icebergQty"],
+            $data["time"], $data["updateTime"]
+        );
     }
 }

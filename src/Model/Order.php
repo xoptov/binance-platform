@@ -6,6 +6,10 @@ class Order
 {
     use RateTrait;
 
+    use StopPriceTrait;
+
+    use IcebergTrait;
+
 	const SIDE_BUY  = "BUY";
 	const SIDE_SELL = "SELL";
 
@@ -25,6 +29,10 @@ class Order
     const TYPE_TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT";
     const TYPE_LIMIT_MAKER       = "LIMIT_MAKER";
 
+    const TIF_GTC = "GTC";
+    const TIF_IOC = "IOC";
+    const TIF_FOK = "FOK";
+
 	/** @var int */
 	private $id;
 	
@@ -43,16 +51,10 @@ class Order
     /** @var string */
 	private $status;
 
-	/** @var float */
-    private $stopPrice;
-
     /** @var float */
     private $executedVolume;
 
-    /** @var float */
-    private $icebergVolume;
-
-	/** @var int */
+    /** @var int */
 	private $createdAt;
 	
 	/** @var int */
@@ -87,6 +89,38 @@ class Order
 		$this->createdAt = $createdAt;
 		$this->updatedAt = $updatedAt;
 	}
+
+    /**
+     * @return array
+     */
+	public static function supportedSides(): array
+    {
+        return [self::SIDE_BUY, self::SIDE_SELL];
+    }
+
+    /**
+     * @return array
+     */
+    public static function supportedTypes(): array
+    {
+        return [
+            self::TYPE_LIMIT,
+            self::TYPE_MARKET,
+            self::TYPE_STOP_LOSS,
+            self::TYPE_STOP_LOSS_LIMIT,
+            self::TYPE_TAKE_PROFIT,
+            self::TYPE_TAKE_PROFIT_LIMIT,
+            self::TYPE_LIMIT_MAKER
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public static function supportedTimeInForce(): array
+    {
+        return [self::TIF_GTC, self::TIF_IOC, self::TIF_IOC];
+    }
 	
 	/**
 	 * @return int
