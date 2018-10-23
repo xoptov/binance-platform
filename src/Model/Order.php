@@ -59,6 +59,9 @@ class Order
 	
 	/** @var int */
 	private $updatedAt;
+
+	/** @var bool */
+	private $keepInLock;
 	
 	/**
 	 * @param int          $id
@@ -73,8 +76,9 @@ class Order
      * @param float        $icebergVolume
 	 * @param int          $createdAt
 	 * @param int          $updatedAt
+     * @param bool|null    $keepInLock
 	 */
-	public function __construct(int $id, CurrencyPair $currencyPair, string $type, string $side, string $status, float $price, float $volume, float $stopPrice, float $executedVolume, float $icebergVolume, int $createdAt, int $updatedAt)
+	public function __construct(int $id, CurrencyPair $currencyPair, string $type, string $side, string $status, float $price, float $volume, float $stopPrice, float $executedVolume, float $icebergVolume, int $createdAt, int $updatedAt, ?bool $keepInLock = true)
 	{
 		$this->id = $id;
 		$this->currencyPair = $currencyPair;
@@ -88,6 +92,7 @@ class Order
 		$this->icebergVolume = $icebergVolume;
 		$this->createdAt = $createdAt;
 		$this->updatedAt = $updatedAt;
+		$this->keepInLock = $keepInLock;
 	}
 
     /**
@@ -265,6 +270,14 @@ class Order
 	{
 		return $this->updatedAt;
 	}
+
+    /**
+     * @return bool
+     */
+	public function isKeepInLock(): bool
+    {
+        return $this->keepInLock;
+    }
 
     /**
      * @return bool

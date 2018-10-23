@@ -16,8 +16,11 @@ class Active
     /** @var array */
     private $supportedTradeTypes = [Trade::TYPE_BUY, Trade::TYPE_SELL];
 
-    /** @var double */
+    /** @var float */
     private $volume;
+
+    /** @var float */
+    private $locked;
 
     /** @var double */
     private $actualVolume = 0.0;
@@ -29,16 +32,18 @@ class Active
     private $trades = array();
 
     /** @var Order[] */
-    private $asks = array();
+    private $orders = array();
 
     /**
-     * @param Currency $currency
-     * @param float    $volume
+     * @param Currency   $currency
+     * @param float      $volume
+     * @param float|null $locked
      */
-    public function __construct(Currency $currency, float $volume = 0.0)
+    public function __construct(Currency $currency, float $volume = 0.0, ?float $locked = 0.0)
     {
         $this->currency = $currency;
         $this->volume = $volume;
+        $this->locked = $locked;
     }
 
     /**
@@ -82,6 +87,14 @@ class Active
     }
 
     /**
+     * @return float
+     */
+    public function getLocked(): float
+    {
+        return $this->locked;
+    }
+
+    /**
      * @return string
      */
     public function getSymbol(): string
@@ -92,23 +105,9 @@ class Active
     /**
      * @return float
      */
-    public function getLockedVolume(): float
-    {
-        $total = 0.0;
-
-        foreach ($this->asks as $ask) {
-            $total += $ask->getVolume();
-        }
-
-        return $total;
-    }
-
-    /**
-     * @return float
-     */
     public function getFreeVolume(): float
     {
-        return $this->getVolume() - $this->getLockedVolume();
+        return $this->getVolume() - $this->locked;
     }
 
     /**
@@ -249,52 +248,65 @@ class Active
     }
 
     /**
-     * @param Order $order
-     * @return bool
+     * @param float $value
      */
-    public function hasAsk(Order $order): bool
+    public function increaseLock(float $value): void
     {
-        return isset($this->asks[$order->getId()]);
+        $this->locked += $value;
+    }
+
+    /**
+     * @param float $value
+     */
+    public function decreaseLock(float $value): void
+    {
+        $this->locked -= $value;
     }
 
     /**
      * @param Order $order
      * @return bool
      */
-    public function addAsk(Order $order): bool
+    public function hasOrder(Order $order): bool
     {
-        if (!$order->isAsk()) {
-            return false;
-        }
-
-        if ($order->getBaseCurrency() !== $this->currency) {
-            return false;
-        }
-
-        if ($this->hasAsk($order)) {
-            return false;
-        }
-
-        $this->asks[$order->getId()] = $order;
-
-        return false;
+        return isset($this->orders[$order->getId()]);
     }
 
     /**
      * @param Order $order
      * @return bool
      */
-    public function removeAsk(Order $order): bool
+    public function addOrder(Order $order): bool
     {
-        if (!$order->isAsk()) {
+
+        if ($this->hasOrder($order)) {
             return false;
         }
 
-        if (!$this->hasAsk($order)) {
+        if ($order->isKeepInLock() && $order->isAsk()) {
+            $this->increaseLock($order->getVolume());
+        }
+
+        $this->orders[$order->getId()] = $order;
+
+        return true;
+    }
+
+    /**
+     * @param Order $order
+     * @return bool
+     */
+    public function removeOrder(Order $order): bool
+    {
+        if (!$this->hasORder($order)) {
             return false;
         }
 
-        unset($this->asks[$order->getId()]);
+        if ($order->isKeepInLock() && $order->isAsk()) {
+            $this->decreaseLock($order->getVolume());
+        }
+
+        unset($this->orders[$order->getId()]);
 
         return true;
     }
@@ -308,7 +320,7 @@ class Active
     public function endCalculatePosition(): void
     {
         $this->volume = $this->actualVolume;
-        $this->volume = 0.0;
+        unset($this->actualVolume);
     }
 
     /**

@@ -144,8 +144,9 @@ class Platform
                     $loop->stop();
                 });
             },
-            function($e) use ($loop) {
+            function($error) use ($loop) {
                 $loop->stop();
+                var_dump($error); // TODO: remove this when refactoring.
             }
         );
 
@@ -267,7 +268,7 @@ class Platform
                 throw new \RuntimeException("Asset not found.");
             }
 
-            $active = new Active($currency, $volume);
+            $active = new Active($currency, $volume, $item["locked"]);
             $this->account->addActive($active);
         }
     }
@@ -299,7 +300,7 @@ class Platform
                     continue;
                 }
 
-                $order = $this->createOrder($currencyPair, $item);
+                $order = $this->createOrder($currencyPair, $item, false);
 
                 $this->account->addOrder($order);
             }
@@ -440,13 +441,14 @@ class Platform
     /**
      * @param CurrencyPair $currencyPair
      * @param array        $data
+     * @param bool         $keepInLock
      * @return Order
      */
-    private function createOrder(CurrencyPair $currencyPair, array $data): Order
+    private function createOrder(CurrencyPair $currencyPair, array $data, bool $keepInLock): Order
     {
         return new Order($data["orderId"], $currencyPair, $data["type"], $data["side"], $data["status"],
             $data["price"], $data["origQty"], $data["stopPrice"], $data["executedQty"], $data["icebergQty"],
-            $data["time"], $data["updateTime"]
+            $data["time"], $data["updateTime"], $keepInLock
         );
     }
 }

@@ -141,8 +141,10 @@ class Account
 
         $this->orders[$order->getId()] = $order;
 
-        if ($order->isAsk() && $active = $this->getActive($order->getBaseCurrency())) {
-            $active->addAsk($order);
+        $active = $this->getActive($order->getBaseCurrency());
+
+        if ($active) {
+            $active->addOrder($order);
         }
 
         return true;
@@ -160,8 +162,10 @@ class Account
 
         unset($this->orders[$order->getId()]);
 
-        if ($order->isAsk() && $active = $this->getActive($order->getBaseCurrency())) {
-            $active->removeAsk($order);
+        $active = $this->getActive($order->getBaseCurrency());
+
+        if ($active) {
+            $active->removeOrder($order);
         }
 
         return true;
