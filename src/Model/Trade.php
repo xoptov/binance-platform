@@ -8,8 +8,8 @@ class Trade implements TimeTrackAbleInterface
 
     use ActionTrait;
 
-	const TYPE_BUY  = "BUY";
-	const TYPE_SELL = "SELL";
+	const TYPE_BUY  = 'BUY';
+	const TYPE_SELL = 'SELL';
 
 	/** @var int */
 	private $orderId;

@@ -10,6 +10,7 @@ class TradeStopLoss extends Trade
     use StopPriceTrait;
 
     /**
+     * @param string       $action
      * @param CurrencyPair $currencyPair
      * @param string       $side
      * @param string       $type
@@ -17,9 +18,9 @@ class TradeStopLoss extends Trade
      * @param float        $stopPrice
      * @param string|null  $responseType
      */
-    public function __construct(CurrencyPair $currencyPair, string $side, string $type, float $volume, float $stopPrice, ?string $responseType = null)
+    public function __construct(string $action, CurrencyPair $currencyPair, string $side, string $type, float $volume, float $stopPrice, ?string $responseType = null)
     {
-        parent::__construct($currencyPair, $side, $type, $volume, $responseType);
+        parent::__construct($action, $currencyPair, $side, $type, $volume, $responseType);
 
         $this->stopPrice = $stopPrice;
     }

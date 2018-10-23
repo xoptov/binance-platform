@@ -231,7 +231,7 @@ class Active
     public function decrease(float $value): void
     {
         if ($this->getVolume() < $value) {
-            throw new \RuntimeException("Insufficient funds.");
+            throw new \RuntimeException('Insufficient funds.');
         }
 
         $this->volume -= $value;

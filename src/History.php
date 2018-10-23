@@ -89,22 +89,22 @@ class History
 
         foreach ($result as $item) {
 
-            if ($item["isBuyer"]) {
+            if ($item['isBuyer']) {
                 $type = Trade::TYPE_BUY;
             } else {
                 $type = Trade::TYPE_SELL;
             }
 
-            $currency = $this->tradePair->getCurrency($item["commissionAsset"]);
+            $currency = $this->tradePair->getCurrency($item['commissionAsset']);
 
             if (!$currency) {
-                throw new \RuntimeException("Unsupported commission currency in trade.");
+                throw new \RuntimeException('Unsupported commission currency in trade.');
             }
 
-            $commission = new Commission($currency, $item["commission"]);
+            $commission = new Commission($currency, $item['commission']);
 
-            $trades[] = new Trade($item["id"], $this->tradePair, $type, $item["price"], $item["qty"], $commission, $item["isMaker"], $item["time"]);
-            $this->tradeLastId = $item["id"];
+            $trades[] = new Trade($item['id'], $this->tradePair, $type, $item['price'], $item['qty'], $commission, $item['isMaker'], $item['time']);
+            $this->tradeLastId = $item['id'];
         }
 
         return $trades;
@@ -188,30 +188,30 @@ class History
         $currency = $this->tradePair->getBaseCurrency();
         $result = $this->api->depositHistory($currency);
 
-        if (!$result["success"]) {
-            throw new \RuntimeException("Can not load deposit history.");
+        if (!$result['success']) {
+            throw new \RuntimeException('Can not load deposit history.');
         }
 
-        foreach ($result["depositList"] as $deposit) {
-            if (Transaction::STATUS_SUCCESS != $deposit["status"]) {
+        foreach ($result['depositList'] as $deposit) {
+            if (Transaction::STATUS_SUCCESS != $deposit['status']) {
                 continue;
             }
-            $transaction = new Transaction($deposit["txId"], $currency, Transaction::TYPE_DEPOSIT, $deposit["amount"], $deposit["insertTime"]);
+            $transaction = new Transaction($deposit['txId'], $currency, Transaction::TYPE_DEPOSIT, $deposit['amount'], $deposit['insertTime']);
             $this->addTransaction($transaction);
         }
 
         $result = $this->api->withdrawHistory($currency);
 
-        if (!$result["success"]) {
-            throw new \RuntimeException("Can not load withdraw history.");
+        if (!$result['success']) {
+            throw new \RuntimeException('Can not load withdraw history.');
         }
 
-        foreach ($result["withdrawList"] as $withdraw) {
-            if (Transaction::STATUS_COMPLETED != $withdraw["status"]) {
+        foreach ($result['withdrawList'] as $withdraw) {
+            if (Transaction::STATUS_COMPLETED != $withdraw['status']) {
                 continue;
             }
 
-            $transaction = new Transaction($withdraw["txId"], $currency, Transaction::TYPE_WITHDRAW, $withdraw["amount"], $withdraw["applyTime"]);
+            $transaction = new Transaction($withdraw['txId'], $currency, Transaction::TYPE_WITHDRAW, $withdraw['amount'], $withdraw['applyTime']);
             $this->addTransaction($transaction);
         }
 

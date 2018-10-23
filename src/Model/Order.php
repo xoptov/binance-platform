@@ -10,28 +10,28 @@ class Order
 
     use IcebergTrait;
 
-	const SIDE_BUY  = "BUY";
-	const SIDE_SELL = "SELL";
+	const SIDE_BUY  = 'BUY';
+	const SIDE_SELL = 'SELL';
 
-	const STATUS_NEW              = "NEW";
-    const STATUS_PARTIALLY_FILLED = "PARTIALLY_FILLED";
-    const STATUS_FILLED           = "FILLED";
-    const STATUS_CANCELED         = "CANCELED";
-    const STATUS_PENDING_CANCEL   = "PENDING_CANCEL";
-    const STATUS_REJECTED         = "REJECTED";
-    const STATUS_EXPIRED          = "EXPIRED";
+	const STATUS_NEW              = 'NEW';
+    const STATUS_PARTIALLY_FILLED = 'PARTIALLY_FILLED';
+    const STATUS_FILLED           = 'FILLED';
+    const STATUS_CANCELED         = 'CANCELED';
+    const STATUS_PENDING_CANCEL   = 'PENDING_CANCEL';
+    const STATUS_REJECTED         = 'REJECTED';
+    const STATUS_EXPIRED          = 'EXPIRED';
 
-    const TYPE_LIMIT             = "LIMIT";
-    const TYPE_MARKET            = "MARKET";
-    const TYPE_STOP_LOSS         = "STOP_LOSS";
-    const TYPE_STOP_LOSS_LIMIT   = "STOP_LOSS_LIMIT";
-    const TYPE_TAKE_PROFIT       = "TAKE_PROFIT";
-    const TYPE_TAKE_PROFIT_LIMIT = "TAKE_PROFIT_LIMIT";
-    const TYPE_LIMIT_MAKER       = "LIMIT_MAKER";
+    const TYPE_LIMIT             = 'LIMIT';
+    const TYPE_MARKET            = 'MARKET';
+    const TYPE_STOP_LOSS         = 'STOP_LOSS';
+    const TYPE_STOP_LOSS_LIMIT   = 'STOP_LOSS_LIMIT';
+    const TYPE_TAKE_PROFIT       = 'TAKE_PROFIT';
+    const TYPE_TAKE_PROFIT_LIMIT = 'TAKE_PROFIT_LIMIT';
+    const TYPE_LIMIT_MAKER       = 'LIMIT_MAKER';
 
-    const TIF_GTC = "GTC";
-    const TIF_IOC = "IOC";
-    const TIF_FOK = "FOK";
+    const TIF_GTC = 'GTC';
+    const TIF_IOC = 'IOC';
+    const TIF_FOK = 'FOK';
 
 	/** @var int */
 	private $id;
@@ -181,11 +181,11 @@ class Order
     public function fill(Trade $trade): bool
     {
         if ($this->getCurrencyPair() !== $trade->getCurrencyPair()) {
-            throw new \RuntimeException("Unsupported currency pair.");
+            throw new \RuntimeException('Unsupported currency pair.');
         }
 
         if ($trade->getType() !== $this->getSide()) {
-            throw new \RuntimeException("Unsupported trade operation.");
+            throw new \RuntimeException('Unsupported trade operation.');
         }
 
         if (!$this->addTrade($trade)) {

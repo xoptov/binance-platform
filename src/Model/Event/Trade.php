@@ -35,14 +35,14 @@ class Trade
 
     /** @var array */
     private static $mapping = [
-        "eventTime"     => 'E',
-        "tradeId"       => 't',
-        "price"         => 'p',
-        "volume"        => 'q',
-        "buyerOrderId"  => 'b',
-        "sellerOrderId" => 'a',
-        "timestamp"     => 'T',
-        "buyerMaker"    => 'm'
+        'eventTime'     => 'E',
+        'tradeId'       => 't',
+        'price'         => 'p',
+        'volume'        => 'q',
+        'buyerOrderId'  => 'b',
+        'sellerOrderId' => 'a',
+        'timestamp'     => 'T',
+        'buyerMaker'    => 'm'
     ];
 
     /**

@@ -4,8 +4,8 @@ namespace Xoptov\BinancePlatform\Model;
 
 class CurrencyPair
 {
-    const STATUS_TRADING = "TRADING";
-    const STATUS_BREAK   = "BREAK";
+    const STATUS_TRADING = 'TRADING';
+    const STATUS_BREAK   = 'BREAK';
 
     /** @var Currency */
     private $base;
@@ -73,7 +73,7 @@ class CurrencyPair
      */
     public function getSymbol(): string
     {
-        return sprintf("%s%s", $this->base->getSymbol(), $this->quote->getSymbol());
+        return sprintf('%s%s', $this->base->getSymbol(), $this->quote->getSymbol());
     }
 
     /**
@@ -161,15 +161,15 @@ class CurrencyPair
     private function setFilters(array $filters): void
     {
         foreach ($filters as $item) {
-            if ($this->hasFilter($item["filterType"])) {
+            if ($this->hasFilter($item['filterType'])) {
                 continue;
             }
 
-            $filterType = $item["filterType"];
+            $filterType = $item['filterType'];
             $this->filters[$filterType] = [];
 
             foreach ($item as $field => $value) {
-                if ("filterType" === $field) {
+                if ('filterType' === $field) {
                     continue;
                 }
                 $this->filters[$filterType][$field] = $value;

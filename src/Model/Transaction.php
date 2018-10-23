@@ -6,8 +6,8 @@ class Transaction implements TimeTrackAbleInterface
 {
     use ActionTrait;
 
-	const TYPE_DEPOSIT  = "deposit";
-	const TYPE_WITHDRAW = "withdraw";
+	const TYPE_DEPOSIT  = 'deposit';
+	const TYPE_WITHDRAW = 'withdraw';
 
 	const STATUS_PENDING = 0;
 	const STATUS_SUCCESS = 1;

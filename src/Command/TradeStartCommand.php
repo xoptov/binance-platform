@@ -18,12 +18,12 @@ class TradeStartCommand extends Command
     protected function configure()
     {
         $this
-            ->setName("start")
-            ->setDescription("This command for start trading with ")
-            ->addArgument("symbol", InputArgument::REQUIRED, "Trading symbol for trade.")
-            ->addArgument("apiKey", InputArgument::REQUIRED, "Account api key for connecting to exchange.")
-            ->addArgument("secret", InputArgument::REQUIRED, "Secret for connecting to exchange.")
-            ->addArgument("script", InputArgument::OPTIONAL, "Script file of trading algorithm.", "trader.php");
+            ->setName('start')
+            ->setDescription('This command for start trading with ')
+            ->addArgument('symbol', InputArgument::REQUIRED, 'Trading symbol for trade.')
+            ->addArgument('apiKey', InputArgument::REQUIRED, 'Account api key for connecting to exchange.')
+            ->addArgument('secret', InputArgument::REQUIRED, 'Secret for connecting to exchange.')
+            ->addArgument('script', InputArgument::OPTIONAL, 'Script file of trading algorithm.', 'trader.php');
     }
 
     /**
@@ -31,15 +31,15 @@ class TradeStartCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $script = $input->getArgument("script");
+        $script = $input->getArgument('script');
 
         if (file_exists($script)) {
             require_once $script;
         }
 
-        $symbol = $input->getArgument("symbol");
-        $apiKey = $input->getArgument("apiKey");
-        $secret = $input->getArgument("secret");
+        $symbol = $input->getArgument('symbol');
+        $apiKey = $input->getArgument('apiKey');
+        $secret = $input->getArgument('secret');
 
         $platform = Platform::create();
         $platform->initialize($symbol, $apiKey, $secret);

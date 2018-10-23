@@ -133,27 +133,27 @@ class Exchange
     {
         $result = $this->api->exchangeInfo();
 
-        foreach ($result["symbols"] as $item) {
+        foreach ($result['symbols'] as $item) {
 
-            if ($this->hasCurrencyPair($item["symbol"])) {
+            if ($this->hasCurrencyPair($item['symbol'])) {
                 continue;
             }
 
-            $base = $this->getCurrency($item["baseAsset"]);
+            $base = $this->getCurrency($item['baseAsset']);
 
             if (!$base) {
-                $base = new Currency($item["baseAsset"]);
+                $base = new Currency($item['baseAsset']);
                 $this->addCurrency($base);
             }
 
-            $quote = $this->getCurrency($item["quoteAsset"]);
+            $quote = $this->getCurrency($item['quoteAsset']);
 
             if (!$quote) {
-                $quote = new Currency($item["quoteAsset"]);
+                $quote = new Currency($item['quoteAsset']);
                 $this->addCurrency($quote);
             }
 
-            $currencyPair = new CurrencyPair($base, $quote, $item["status"], $item["orderTypes"], $item["icebergAllowed"], $item["filters"]);
+            $currencyPair = new CurrencyPair($base, $quote, $item['status'], $item['orderTypes'], $item['icebergAllowed'], $item['filters']);
             $this->addCurrencyPair($currencyPair);
         }
     }

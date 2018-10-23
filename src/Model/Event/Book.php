@@ -7,7 +7,7 @@ use Xoptov\BinancePlatform\Model\CurrencyPair;
 
 class Book
 {
-    const TYPE_UPDATE = "update";
+    const TYPE_UPDATE = 'update';
 
     /** @var CurrencyPair */
     private $currencyPair;

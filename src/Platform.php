@@ -23,7 +23,7 @@ use Xoptov\BinancePlatform\Model\Request\Trade as TradeRequest;
 class Platform
 {
     /** @var string */
-    private static $stream = "wss://stream.binance.com:9443/ws/";
+    private static $stream = 'wss://stream.binance.com:9443/ws/';
 
     /** @var bool */
     private static $created = false;
@@ -92,7 +92,7 @@ class Platform
             $this->exchange = Exchange::create($this->api);
 
             if (!$this->exchange->hasCurrencyPair($symbol)) {
-                throw new \InvalidArgumentException("Specified symbol dose not trade on exchange.");
+                throw new \InvalidArgumentException('Specified symbol dose not trade on exchange.');
             }
 
             $this->tradePair = $this->exchange->getCurrencyPair($symbol);
@@ -115,8 +115,8 @@ class Platform
 
         $this->initialized = true;
 
-        if (function_exists("onInit")) {
-            call_user_func("onInit", $this);
+        if (function_exists('onInit')) {
+            call_user_func('onInit', $this);
         }
 
         return true;
@@ -125,7 +125,7 @@ class Platform
     public function run(): void
     {
         if (!$this->initialized) {
-            throw new \RuntimeException("Platform must be initialized first.");
+            throw new \RuntimeException('Platform must be initialized first.');
         }
 
         $loop = Factory::create();
@@ -134,13 +134,13 @@ class Platform
 
         // TODO: this code need refactoring.
         // Subscription to WebSocket stream.
-        $clientConnector(self::$stream . strtolower($this->tradePair) . "@trade")->then(
+        $clientConnector(self::$stream . strtolower($this->tradePair) . '@trade')->then(
             function(WebSocket $ws) use ($loop){
-                $ws->on("message", function ($data) {
+                $ws->on('message', function ($data) {
                     $json = json_decode($data, true);
                     $this->handleTrade($json);
                 });
-                $ws->on("close", function ($code = null, $reason = null) use ($loop) {
+                $ws->on('close', function ($code = null, $reason = null) use ($loop) {
                     $loop->stop();
                 });
             },
@@ -240,35 +240,35 @@ class Platform
         $result = $this->api->account();
 
         $access = [
-            Account::ACCESS_TRADE    => $result["canTrade"],
-            Account::ACCESS_WITHDRAW => $result["canWithdraw"],
-            Account::ACCESS_DEPOSIT  => $result["canWithdraw"]
+            Account::ACCESS_TRADE    => $result['canTrade'],
+            Account::ACCESS_WITHDRAW => $result['canWithdraw'],
+            Account::ACCESS_DEPOSIT  => $result['canWithdraw']
         ];
 
         $fees = [
-            Account::FEE_MAKER  => $result["makerCommission"],
-            Account::FEE_TAKER  => $result["takerCommission"],
-            Account::FEE_BUYER  => $result["buyerCommission"],
-            Account::FEE_SELLER => $result["sellerCommission"]
+            Account::FEE_MAKER  => $result['makerCommission'],
+            Account::FEE_TAKER  => $result['takerCommission'],
+            Account::FEE_BUYER  => $result['buyerCommission'],
+            Account::FEE_SELLER => $result['sellerCommission']
         ];
 
         $this->account = new Account($access, $fees);
 
-        foreach ($result["balances"] as $item) {
+        foreach ($result['balances'] as $item) {
 
-            $volume = $item["free"] + $item["locked"];
+            $volume = $item['free'] + $item['locked'];
 
             if ($volume == 0) {
                 continue;
             }
 
-            $currency = $this->exchange->getCurrency($item["asset"]);
+            $currency = $this->exchange->getCurrency($item['asset']);
 
             if (empty($currency)) {
-                throw new \RuntimeException("Asset not found.");
+                throw new \RuntimeException('Asset not found.');
             }
 
-            $active = new Active($currency, $volume, $item["locked"]);
+            $active = new Active($currency, $volume, $item['locked']);
             $this->account->addActive($active);
         }
     }
@@ -285,18 +285,18 @@ class Platform
 
             foreach ($result as $item) {
 
-                if ($this->hasOrder($item["orderId"])) {
+                if ($this->hasOrder($item['orderId'])) {
                     continue;
                 }
 
-                $currencyPair = $this->getCurrencyPair($item["symbol"]);
+                $currencyPair = $this->getCurrencyPair($item['symbol']);
 
                 if (!$currencyPair) {
-                    throw new \RuntimeException("Unknown symbol in order.");
+                    throw new \RuntimeException('Unknown symbol in order.');
                 }
 
                 // Not load not actual orders.
-                if (!in_array($item["status"], [Order::STATUS_NEW, Order::STATUS_PARTIALLY_FILLED])) {
+                if (!in_array($item['status'], [Order::STATUS_NEW, Order::STATUS_PARTIALLY_FILLED])) {
                     continue;
                 }
 
@@ -305,8 +305,8 @@ class Platform
                 $this->account->addOrder($order);
             }
 
-            if (isset($item) && key_exists("orderId", $item)) {
-                $lastOrderId = $item["orderId"];
+            if (isset($item) && key_exists('orderId', $item)) {
+                $lastOrderId = $item['orderId'];
             }
 
         } while (count($result) == static::$limit);
@@ -383,8 +383,8 @@ class Platform
             $this->handleSale($event);
         }
 
-        if (function_exists("onTrade")) {
-            call_user_func("onTrade", $event, $this);
+        if (function_exists('onTrade')) {
+            call_user_func('onTrade', $event, $this);
         }
     }
 
@@ -446,9 +446,9 @@ class Platform
      */
     private function createOrder(CurrencyPair $currencyPair, array $data, bool $keepInLock): Order
     {
-        return new Order($data["orderId"], $currencyPair, $data["type"], $data["side"], $data["status"],
-            $data["price"], $data["origQty"], $data["stopPrice"], $data["executedQty"], $data["icebergQty"],
-            $data["time"], $data["updateTime"], $keepInLock
+        return new Order($data['orderId'], $currencyPair, $data['type'], $data['side'], $data['status'],
+            $data['price'], $data['origQty'], $data['stopPrice'], $data['executedQty'], $data['icebergQty'],
+            $data['time'], $data['updateTime'], $keepInLock
         );
     }
 }

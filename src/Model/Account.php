@@ -4,14 +4,14 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Account
 {
-    const ACCESS_TRADE    = "trade";
-    const ACCESS_WITHDRAW = "withdraw";
-    const ACCESS_DEPOSIT  = "deposit";
+    const ACCESS_TRADE    = 'trade';
+    const ACCESS_WITHDRAW = 'withdraw';
+    const ACCESS_DEPOSIT  = 'deposit';
 
-    const FEE_MAKER = "maker";
-    const FEE_TAKER = "taker";
-    const FEE_BUYER = "buyer";
-    const FEE_SELLER = "seller";
+    const FEE_MAKER  = 'maker';
+    const FEE_TAKER  = 'taker';
+    const FEE_BUYER  = 'buyer';
+    const FEE_SELLER = 'seller';
 
     /** @var array */
     private $access = array(
@@ -179,7 +179,7 @@ class Account
         $order = $this->getOrder($trade->getOrderId());
 
         if (!$order) {
-            throw new \RuntimeException("Order not found.");
+            throw new \RuntimeException('Order not found.');
         }
 
         if (!$order->fill($trade)) {
@@ -212,7 +212,7 @@ class Account
         $order = $this->getOrder($trade->getOrderId());
 
         if (!$order) {
-            throw new \RuntimeException("Order not found.");
+            throw new \RuntimeException('Order not found.');
         }
 
         if (!$order->fill($trade)) {

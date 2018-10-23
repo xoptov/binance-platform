@@ -16,6 +16,7 @@ class TradeLimit extends Trade
     use IcebergTrait;
 
     /**
+     * @param string       $action
      * @param CurrencyPair $currencyPair
      * @param string       $side
      * @param string       $type
@@ -25,9 +26,9 @@ class TradeLimit extends Trade
      * @param float|null   $icebergVolume
      * @param string|null  $responseType
      */
-    public function __construct(CurrencyPair $currencyPair, string $side, string $type, float $volume, string $timeInForce, float $price, ?float $icebergVolume = null, ?string $responseType = null)
+    public function __construct(string $action, CurrencyPair $currencyPair, string $side, string $type, float $volume, string $timeInForce, float $price, ?float $icebergVolume = null, ?string $responseType = null)
     {
-        parent::__construct($currencyPair, $side, $type, $volume, $responseType);
+        parent::__construct($action, $currencyPair, $side, $type, $volume, $responseType);
 
         $this->timeInForce = $timeInForce;
         $this->price = $price;

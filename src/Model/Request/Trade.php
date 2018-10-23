@@ -9,9 +9,9 @@ abstract class Trade
 {
     use VolumeTrait;
 
-    const ACTION_OPEN   = "open";
-    const ACTION_CHECK  = "check";
-    const ACTION_REMOVE = "remove";
+    const ACTION_OPEN   = 'open';
+    const ACTION_CHECK  = 'check';
+    const ACTION_REMOVE = 'remove';
 
     /** @var string */
     private $action;

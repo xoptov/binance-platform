@@ -10,6 +10,7 @@ class TradeLimitMaker extends Trade
     use PriceTrait;
 
     /**
+     * @param string       $action
      * @param CurrencyPair $currencyPair
      * @param string       $side
      * @param string       $type
@@ -17,9 +18,9 @@ class TradeLimitMaker extends Trade
      * @param float        $price
      * @param string|null  $responseType
      */
-    public function __construct(CurrencyPair $currencyPair, string $side, string $type, float $volume, float $price, ?string $responseType = null)
+    public function __construct(string $action, CurrencyPair $currencyPair, string $side, string $type, float $volume, float $price, ?string $responseType = null)
     {
-        parent::__construct($currencyPair, $side, $type, $volume, $responseType);
+        parent::__construct($action, $currencyPair, $side, $type, $volume, $responseType);
 
         $this->price = $price;
     }
