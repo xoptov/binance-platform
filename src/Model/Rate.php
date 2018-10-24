@@ -2,6 +2,8 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
+use Xoptov\BinancePlatform\Model\Part\RateTrait;
+
 class Rate
 {
     use RateTrait;

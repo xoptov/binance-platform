@@ -2,14 +2,18 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
-class Trade implements TimeTrackAbleInterface
+use Xoptov\BinancePlatform\Model\Part\TypeTrait;
+use Xoptov\BinancePlatform\Model\Part\PriceTrait;
+use Xoptov\BinancePlatform\Model\Part\ActionTrait;
+use Xoptov\BinancePlatform\Model\Interfaces\TradeTypeInterface;
+
+class Trade implements TradeTypeInterface
 {
     use PriceTrait;
 
     use ActionTrait;
 
-	const TYPE_BUY  = 'BUY';
-	const TYPE_SELL = 'SELL';
+    use TypeTrait;
 
 	/** @var int */
 	private $orderId;
@@ -125,7 +129,7 @@ class Trade implements TimeTrackAbleInterface
      */
     public function isBuy(): bool
     {
-        return self::TYPE_BUY === $this->type;
+        return self::BUY === $this->type;
     }
 
     /**
@@ -133,6 +137,6 @@ class Trade implements TimeTrackAbleInterface
      */
     public function isSell(): bool
     {
-        return self::TYPE_SELL === $this->type;
+        return self::SELL === $this->type;
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Xoptov\BinancePlatform\Model;
+namespace Xoptov\BinancePlatform\Model\Part;
 
 trait StopPriceTrait
 {

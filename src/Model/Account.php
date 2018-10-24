@@ -2,30 +2,24 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
-class Account
+use Xoptov\BinancePlatform\Model\Interfaces\AccountFeeInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\AccountAccessInterface;
+
+class Account implements AccountAccessInterface, AccountFeeInterface
 {
-    const ACCESS_TRADE    = 'trade';
-    const ACCESS_WITHDRAW = 'withdraw';
-    const ACCESS_DEPOSIT  = 'deposit';
-
-    const FEE_MAKER  = 'maker';
-    const FEE_TAKER  = 'taker';
-    const FEE_BUYER  = 'buyer';
-    const FEE_SELLER = 'seller';
-
     /** @var array */
     private $access = array(
-        self::ACCESS_TRADE    => false,
-        self::ACCESS_WITHDRAW => false,
-        self::ACCESS_DEPOSIT  => false
+        self::TRADE    => false,
+        self::WITHDRAW => false,
+        self::DEPOSIT  => false
     );
 
     /** @var array */
     private $fees = array(
-        self::FEE_MAKER  => 0,
-        self::FEE_TAKER  => 0,
-        self::FEE_BUYER  => 0,
-        self::FEE_SELLER => 0
+        self::MAKER  => 0,
+        self::TAKER  => 0,
+        self::BUYER  => 0,
+        self::SELLER => 0
     );
 
     /** @var Active[] */

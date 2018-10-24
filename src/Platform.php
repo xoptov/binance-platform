@@ -16,9 +16,12 @@ use Xoptov\BinancePlatform\Model\Commission;
 use Xoptov\BinancePlatform\Model\Transaction;
 use React\Socket\Connector as SocketConnector;
 use Xoptov\BinancePlatform\Model\CurrencyPair;
-use Xoptov\BinancePlatform\Model\TimeTrackAbleInterface;
 use Xoptov\BinancePlatform\Model\Event\Trade as TradeEvent;
-use Xoptov\BinancePlatform\Model\Request\Trade as TradeRequest;
+use Xoptov\BinancePlatform\Model\Interfaces\TradeTypeInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\AccountFeeInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\OrderStatusInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\TimeTrackAbleInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\AccountAccessInterface;
 
 class Platform
 {
@@ -240,16 +243,16 @@ class Platform
         $result = $this->api->account();
 
         $access = [
-            Account::ACCESS_TRADE    => $result['canTrade'],
-            Account::ACCESS_WITHDRAW => $result['canWithdraw'],
-            Account::ACCESS_DEPOSIT  => $result['canWithdraw']
+            AccountAccessInterface::TRADE    => $result['canTrade'],
+            AccountAccessInterface::WITHDRAW => $result['canWithdraw'],
+            AccountAccessInterface::DEPOSIT  => $result['canWithdraw']
         ];
 
         $fees = [
-            Account::FEE_MAKER  => $result['makerCommission'],
-            Account::FEE_TAKER  => $result['takerCommission'],
-            Account::FEE_BUYER  => $result['buyerCommission'],
-            Account::FEE_SELLER => $result['sellerCommission']
+            AccountFeeInterface::MAKER  => $result['makerCommission'],
+            AccountFeeInterface::TAKER  => $result['takerCommission'],
+            AccountFeeInterface::BUYER  => $result['buyerCommission'],
+            AccountFeeInterface::SELLER => $result['sellerCommission']
         ];
 
         $this->account = new Account($access, $fees);
@@ -296,7 +299,7 @@ class Platform
                 }
 
                 // Not load not actual orders.
-                if (!in_array($item['status'], [Order::STATUS_NEW, Order::STATUS_PARTIALLY_FILLED])) {
+                if (!in_array($item['status'], [OrderStatusInterface::NEW, OrderStatusInterface::PARTIALLY_FILLED])) {
                     continue;
                 }
 
@@ -394,14 +397,14 @@ class Platform
     private function handlePurchase(TradeEvent $event): void
     {
         if ($event->isBuyerMaker()) {
-            $fee = $this->getAccountFee(Account::FEE_MAKER);
+            $fee = $this->getAccountFee(AccountFeeInterface::MAKER);
         } else {
-            $fee = $this->getAccountFee(Account::FEE_TAKER);
+            $fee = $this->getAccountFee(AccountFeeInterface::TAKER);
         }
 
         $commission = new Commission($event->getBaseCurrency(), $this->calculateCommissionVolume($event->getVolume(), $fee));
 
-        $trade = $this->createTrade($event, Trade::TYPE_BUY, $commission, $event->isBuyerMaker());
+        $trade = $this->createTrade($event, TradeTypeInterface::BUY, $commission, $event->isBuyerMaker());
         $trade->setOrderId($event->getBuyerOrderId());
 
         $this->account->purchase($trade);
@@ -413,14 +416,14 @@ class Platform
     private function handleSale(TradeEvent $event): void
     {
         if ($event->isBuyerMaker()) {
-            $fee = $this->getAccountFee(Account::FEE_TAKER);
+            $fee = $this->getAccountFee(AccountFeeInterface::TAKER);
         } else {
-            $fee = $this->getAccountFee(Account::FEE_MAKER);
+            $fee = $this->getAccountFee(AccountFeeInterface::MAKER);
         }
 
         $commission = new Commission($event->getQuoteCurrency(), $this->calculateCommissionVolume($event->getTotal(), $fee));
 
-        $trade = $this->createTrade($event, Trade::TYPE_SELL, $commission, !$event->isBuyerMaker());
+        $trade = $this->createTrade($event, TradeTypeInterface::SELL, $commission, !$event->isBuyerMaker());
         $trade->setOrderId($event->getSellerOrderId());
 
         $this->account->sale($trade);

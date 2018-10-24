@@ -2,6 +2,8 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
+use Xoptov\BinancePlatform\Model\Interfaces\TradeTypeInterface;
+
 class Active
 {
     /** @var Currency */
@@ -11,10 +13,10 @@ class Active
     private $position;
 
     /** @var array */
-    private $supportedTransactionTypes = [Transaction::TYPE_DEPOSIT, Transaction::TYPE_WITHDRAW];
+    private $supportedTransactions = [Transaction::DEPOSIT, Transaction::WITHDRAW];
 
     /** @var array */
-    private $supportedTradeTypes = [Trade::TYPE_BUY, Trade::TYPE_SELL];
+    private $supportedTrades = [TradeTypeInterface::BUY, TradeTypeInterface::SELL];
 
     /** @var float */
     private $volume;
@@ -57,17 +59,17 @@ class Active
     /**
      * @return array
      */
-    public function getSupportedTransactionTypes(): array
+    public function getSupportedTransactions(): array
     {
-        return $this->supportedTransactionTypes;
+        return $this->supportedTransactions;
     }
 
     /**
      * @return array
      */
-    public function getSupportedTradeTypes(): array
+    public function getSupportedTrades(): array
     {
-        return $this->supportedTradeTypes;
+        return $this->supportedTrades;
     }
 
     /**
@@ -140,7 +142,7 @@ class Active
      */
     public function execute(Transaction $transaction): bool
     {
-        if (!in_array($transaction->getType(), $this->supportedTransactionTypes)) {
+        if (!in_array($transaction->getType(), $this->supportedTransactions)) {
             return false;
         }
 
@@ -165,7 +167,7 @@ class Active
      */
     public function trade(Trade $trade): bool
     {
-        if (!in_array($trade->getType(), $this->supportedTradeTypes)) {
+        if (!in_array($trade->getType(), $this->supportedTrades)) {
             return false;
         }
 
@@ -298,7 +300,7 @@ class Active
      */
     public function removeOrder(Order $order): bool
     {
-        if (!$this->hasORder($order)) {
+        if (!$this->hasOrder($order)) {
             return false;
         }
 

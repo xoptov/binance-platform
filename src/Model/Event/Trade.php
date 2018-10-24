@@ -3,8 +3,8 @@
 namespace Xoptov\BinancePlatform\Model\Event;
 
 use Xoptov\BinancePlatform\Model\Currency;
-use Xoptov\BinancePlatform\Model\RateTrait;
 use Xoptov\BinancePlatform\Model\CurrencyPair;
+use Xoptov\BinancePlatform\Model\Part\RateTrait;
 
 class Trade
 {

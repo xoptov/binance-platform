@@ -2,36 +2,27 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
-class Order
+use Xoptov\BinancePlatform\Model\Part\TypeTrait;
+use Xoptov\BinancePlatform\Model\Part\RateTrait;
+use Xoptov\BinancePlatform\Model\Part\IcebergTrait;
+use Xoptov\BinancePlatform\Model\Part\StopPriceTrait;
+use Xoptov\BinancePlatform\Model\Part\TimeInForceTrait;
+use Xoptov\BinancePlatform\Model\Interfaces\OrderTypeInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\OrderSideInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\TimeInForceInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\OrderStatusInterface;
+
+class Order implements OrderSideInterface, OrderTypeInterface, OrderStatusInterface, TimeInForceInterface
 {
+    use TypeTrait;
+
     use RateTrait;
 
     use StopPriceTrait;
 
     use IcebergTrait;
 
-	const SIDE_BUY  = 'BUY';
-	const SIDE_SELL = 'SELL';
-
-	const STATUS_NEW              = 'NEW';
-    const STATUS_PARTIALLY_FILLED = 'PARTIALLY_FILLED';
-    const STATUS_FILLED           = 'FILLED';
-    const STATUS_CANCELED         = 'CANCELED';
-    const STATUS_PENDING_CANCEL   = 'PENDING_CANCEL';
-    const STATUS_REJECTED         = 'REJECTED';
-    const STATUS_EXPIRED          = 'EXPIRED';
-
-    const TYPE_LIMIT             = 'LIMIT';
-    const TYPE_MARKET            = 'MARKET';
-    const TYPE_STOP_LOSS         = 'STOP_LOSS';
-    const TYPE_STOP_LOSS_LIMIT   = 'STOP_LOSS_LIMIT';
-    const TYPE_TAKE_PROFIT       = 'TAKE_PROFIT';
-    const TYPE_TAKE_PROFIT_LIMIT = 'TAKE_PROFIT_LIMIT';
-    const TYPE_LIMIT_MAKER       = 'LIMIT_MAKER';
-
-    const TIF_GTC = 'GTC';
-    const TIF_IOC = 'IOC';
-    const TIF_FOK = 'FOK';
+    use TimeInForceTrait;
 
 	/** @var int */
 	private $id;
@@ -41,9 +32,6 @@ class Order
 	
 	/** @var Trade[] */
 	private $trades = array();
-
-    /** @var string */
-    private $type;
 
     /** @var string */
 	private $side;
@@ -94,38 +82,6 @@ class Order
 		$this->updatedAt = $updatedAt;
 		$this->keepInLock = $keepInLock;
 	}
-
-    /**
-     * @return array
-     */
-	public static function supportedSides(): array
-    {
-        return [self::SIDE_BUY, self::SIDE_SELL];
-    }
-
-    /**
-     * @return array
-     */
-    public static function supportedTypes(): array
-    {
-        return [
-            self::TYPE_LIMIT,
-            self::TYPE_MARKET,
-            self::TYPE_STOP_LOSS,
-            self::TYPE_STOP_LOSS_LIMIT,
-            self::TYPE_TAKE_PROFIT,
-            self::TYPE_TAKE_PROFIT_LIMIT,
-            self::TYPE_LIMIT_MAKER
-        ];
-    }
-
-    /**
-     * @return array
-     */
-    public static function supportedTimeInForce(): array
-    {
-        return [self::TIF_GTC, self::TIF_IOC, self::TIF_IOC];
-    }
 	
 	/**
 	 * @return int
@@ -193,9 +149,9 @@ class Order
         }
 
         if ($this->getVolume() == $this->getFilledVolume()) {
-            $this->status = Order::STATUS_FILLED;
+            $this->status = OrderStatusInterface::FILLED;
         } else {
-            $this->status = Order::STATUS_PARTIALLY_FILLED;
+            $this->status = OrderStatusInterface::PARTIALLY_FILLED;
         }
 
         return true;
@@ -213,6 +169,78 @@ class Order
         }
 
         return $filledVolume;
+    }
+
+    /**
+	 * @return string
+	 */
+	public function getSide(): string
+	{
+		return $this->side;
+	}
+
+    /**
+	 * @return string
+	 */
+	public function getStatus(): string
+	{
+		return $this->status;
+	}
+
+    /**
+	 * @return int
+	 */
+	public function getCreatedAt(): int
+	{
+		return $this->createdAt;
+	}
+
+    /**
+	 * @return int
+	 */
+	public function getUpdatedAt(): int
+	{
+		return $this->updatedAt;
+	}
+
+    /**
+     * @return bool
+     */
+	public function isKeepInLock(): bool
+    {
+        return $this->keepInLock;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNew(): bool
+    {
+        return OrderStatusInterface::NEW === $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+	public function isFilled(): bool
+    {
+        return OrderStatusInterface::FILLED === $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAsk(): bool
+    {
+        return OrderSideInterface::SELL === $this->side;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isBid(): bool
+    {
+        return OrderSideInterface::BUY === $this->side;
     }
 
     /**
@@ -237,69 +265,5 @@ class Order
         $this->trades[$trade->getId()] = $trade;
 
         return true;
-    }
-	
-	/**
-	 * @return string
-	 */
-	public function getSide(): string
-	{
-		return $this->side;
-	}
-	
-	/**
-	 * @return string
-	 */
-	public function getStatus(): string
-	{
-		return $this->status;
-	}
-	
-	/**
-	 * @return int
-	 */
-	public function getCreatedAt(): int
-	{
-		return $this->createdAt;
-	}
-	
-	/**
-	 * @return int
-	 */
-	public function getUpdatedAt(): int
-	{
-		return $this->updatedAt;
-	}
-
-    /**
-     * @return bool
-     */
-	public function isKeepInLock(): bool
-    {
-        return $this->keepInLock;
-    }
-
-    /**
-     * @return bool
-     */
-	public function isFilled(): bool
-    {
-        return self::STATUS_FILLED === $this->status;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isAsk(): bool
-    {
-        return self::SIDE_SELL === $this->side;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isBid(): bool
-    {
-        return self::SIDE_BUY === $this->side;
     }
 }

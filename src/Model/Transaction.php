@@ -2,23 +2,13 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
-class Transaction implements TimeTrackAbleInterface
+use Xoptov\BinancePlatform\Model\Part\ActionTrait;
+use Xoptov\BinancePlatform\Model\Interfaces\TimeTrackAbleInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\TransactionTypeInterface;
+
+class Transaction implements TimeTrackAbleInterface, TransactionTypeInterface
 {
     use ActionTrait;
-
-	const TYPE_DEPOSIT  = 'deposit';
-	const TYPE_WITHDRAW = 'withdraw';
-
-	const STATUS_PENDING = 0;
-	const STATUS_SUCCESS = 1;
-
-	const STATUS_EMAIL_SENT = 0;
-	const STATUS_CANCELED = 1;
-	const STATUS_AWAITING_APPROVAL = 2;
-	const STATUS_REJECTED = 3;
-	const STATUS_PROCESSING = 4;
-	const STATUS_FAILURE = 5;
-	const STATUS_COMPLETED = 6;
 
 	/** @var Currency */
 	private $currency;
@@ -61,7 +51,7 @@ class Transaction implements TimeTrackAbleInterface
      */
     public function isDeposit(): bool
     {
-        return self::TYPE_DEPOSIT === $this->type;
+        return self::DEPOSIT === $this->type;
     }
 
     /**
@@ -69,6 +59,6 @@ class Transaction implements TimeTrackAbleInterface
      */
     public function isWithdraw(): bool
     {
-        return self::TYPE_WITHDRAW === $this->type;
+        return self::WITHDRAW === $this->type;
     }
 }

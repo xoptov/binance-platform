@@ -8,6 +8,9 @@ use Xoptov\BinancePlatform\Model\Trade;
 use Xoptov\BinancePlatform\Model\Commission;
 use Xoptov\BinancePlatform\Model\Transaction;
 use Xoptov\BinancePlatform\Model\CurrencyPair;
+use Xoptov\BinancePlatform\Model\Interfaces\TradeTypeInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\TransactionTypeInterface;
+use Xoptov\BinancePlatform\Model\Interfaces\TransactionStatusInterface;
 
 class History
 {
@@ -90,9 +93,9 @@ class History
         foreach ($result as $item) {
 
             if ($item['isBuyer']) {
-                $type = Trade::TYPE_BUY;
+                $type = TradeTypeInterface::BUY;
             } else {
-                $type = Trade::TYPE_SELL;
+                $type = TradeTypeInterface::SELL;
             }
 
             $currency = $this->tradePair->getCurrency($item['commissionAsset']);
@@ -193,10 +196,10 @@ class History
         }
 
         foreach ($result['depositList'] as $deposit) {
-            if (Transaction::STATUS_SUCCESS != $deposit['status']) {
+            if (TransactionStatusInterface::DEPOSIT_SUCCESS != $deposit['status']) {
                 continue;
             }
-            $transaction = new Transaction($deposit['txId'], $currency, Transaction::TYPE_DEPOSIT, $deposit['amount'], $deposit['insertTime']);
+            $transaction = new Transaction($deposit['txId'], $currency, TransactionTypeInterface::DEPOSIT, $deposit['amount'], $deposit['insertTime']);
             $this->addTransaction($transaction);
         }
 
@@ -207,11 +210,11 @@ class History
         }
 
         foreach ($result['withdrawList'] as $withdraw) {
-            if (Transaction::STATUS_COMPLETED != $withdraw['status']) {
+            if (TransactionStatusInterface::WITHDRAW_COMPLETED != $withdraw['status']) {
                 continue;
             }
 
-            $transaction = new Transaction($withdraw['txId'], $currency, Transaction::TYPE_WITHDRAW, $withdraw['amount'], $withdraw['applyTime']);
+            $transaction = new Transaction($withdraw['txId'], $currency, TransactionTypeInterface::WITHDRAW, $withdraw['amount'], $withdraw['applyTime']);
             $this->addTransaction($transaction);
         }
 

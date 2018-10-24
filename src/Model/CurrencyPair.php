@@ -2,11 +2,10 @@
 
 namespace Xoptov\BinancePlatform\Model;
 
-class CurrencyPair
-{
-    const STATUS_TRADING = 'TRADING';
-    const STATUS_BREAK   = 'BREAK';
+use Xoptov\BinancePlatform\Model\Interfaces\SymbolStatusInterface;
 
+class CurrencyPair implements SymbolStatusInterface
+{
     /** @var Currency */
     private $base;
 
@@ -128,7 +127,7 @@ class CurrencyPair
      */
     public function isTrading(): bool
     {
-        return self::STATUS_TRADING === $this->status;
+        return self::TRADING === $this->status;
     }
 
     /**
@@ -136,7 +135,7 @@ class CurrencyPair
      */
     public function isBreak(): bool
     {
-        return self::STATUS_BREAK === $this->status;
+        return self::BREAK === $this->status;
     }
 
 
