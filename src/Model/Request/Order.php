@@ -6,10 +6,14 @@ use Xoptov\BinancePlatform\Model\CurrencyPair;
 
 abstract class Order
 {
-    /** @var CurrencyPair */
+    /**
+     * @var CurrencyPair
+     */
     protected $currencyPair;
 
-    /** @var string|null */
+    /**
+     * @var string|null
+     */
     protected $clientOrderId;
 
     /**

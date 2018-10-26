@@ -4,7 +4,9 @@ namespace Xoptov\BinancePlatform\Model\Part;
 
 trait TypeTrait
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type;
 
     /**

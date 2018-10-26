@@ -4,16 +4,24 @@ namespace Xoptov\BinancePlatform\Model\Part;
 
 trait ActionTrait
 {
-    /** @var mixed */
+    /**
+     * @var mixed
+     */
     protected $id;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $volume;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $timestamp;
 
     /**

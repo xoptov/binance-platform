@@ -10,7 +10,9 @@ class OrderStopLoss extends OrderOpen
 {
     use StopPriceTrait;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type = OrderTypeInterface::STOP_LOSS;
 
     /**

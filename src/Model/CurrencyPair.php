@@ -6,22 +6,34 @@ use Xoptov\BinancePlatform\Model\Interfaces\SymbolStatusInterface;
 
 class CurrencyPair implements SymbolStatusInterface
 {
-    /** @var Currency */
+    /**
+     * @var Currency
+     */
     private $base;
 
-    /** @var Currency */
+    /**
+     * @var Currency
+     */
     private $quote;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $status;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $orderTypes;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $icebergAllowed;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $filters = array();
 
     /**
@@ -32,7 +44,8 @@ class CurrencyPair implements SymbolStatusInterface
      * @param bool     $icebergAllowed
      * @param array    $filters
      */
-    public function __construct(Currency $base, Currency $quote, string $status, array $orderTypes, bool $icebergAllowed, array $filters)
+    public function __construct(Currency $base, Currency $quote, string $status, array $orderTypes,
+                                bool $icebergAllowed, array $filters)
     {
         $this->base = $base;
         $this->quote = $quote;
@@ -46,7 +59,7 @@ class CurrencyPair implements SymbolStatusInterface
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getSymbol();
     }
@@ -101,6 +114,7 @@ class CurrencyPair implements SymbolStatusInterface
 
     /**
      * @param string $filterType
+     *
      * @return bool
      */
     public function hasFilter(string $filterType): bool
@@ -111,6 +125,7 @@ class CurrencyPair implements SymbolStatusInterface
     /**
      * @param string $filterType
      * @param string $field
+     *
      * @return mixed
      */
     public function getFilter(string $filterType, string $field)
@@ -141,6 +156,7 @@ class CurrencyPair implements SymbolStatusInterface
 
     /**
      * @param string $symbol
+     *
      * @return null|Currency
      */
     public function getCurrency(string $symbol): ?Currency

@@ -13,7 +13,7 @@ class TradeStartCommand extends Command
     const SUCCESS = 0;
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function configure()
     {
@@ -27,7 +27,7 @@ class TradeStartCommand extends Command
     }
 
     /**
-     * {@inheritdoc}
+     * @inheritdoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {

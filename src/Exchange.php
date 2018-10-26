@@ -9,21 +9,30 @@ use Xoptov\BinancePlatform\Model\CurrencyPair;
 
 class Exchange
 {
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private static $created = false;
 
-    /** @var API */
+    /**
+     * @var API
+     */
     private $api;
 
-    /** @var Currency[] */
+    /**
+     * @var Currency[]
+     */
     private $currencies = array();
 
-    /** @var CurrencyPair[] */
+    /**
+     * @var CurrencyPair[]
+     */
     private $currencyPairs = array();
 
     /**
      * @param RateLimiter $api
      * @param bool|null   $init
+     *
      * @return null|Exchange
      * @throws \Exception
      */
@@ -54,6 +63,7 @@ class Exchange
 
     /**
      * @param string $symbol
+     *
      * @return bool
      */
     public function hasCurrency(string $symbol): bool
@@ -63,6 +73,7 @@ class Exchange
 
     /**
      * @param string $symbol
+     *
      * @return null|Currency
      */
     public function getCurrency(string $symbol): ?Currency
@@ -76,6 +87,7 @@ class Exchange
 
     /**
      * @param string $symbol
+     *
      * @return bool
      */
     public function hasCurrencyPair(string $symbol): bool
@@ -85,6 +97,7 @@ class Exchange
 
     /**
      * @param string $symbol
+     *
      * @return null|CurrencyPair
      */
     public function getCurrencyPair(string $symbol): ?CurrencyPair
@@ -98,6 +111,7 @@ class Exchange
 
     /**
      * @param Currency $currency
+     *
      * @return bool
      */
     private function addCurrency(Currency $currency): bool
@@ -113,6 +127,7 @@ class Exchange
 
     /**
      * @param CurrencyPair $currencyPair
+     *
      * @return bool
      */
     private function addCurrencyPair(CurrencyPair $currencyPair): bool
@@ -153,7 +168,9 @@ class Exchange
                 $this->addCurrency($quote);
             }
 
-            $currencyPair = new CurrencyPair($base, $quote, $item['status'], $item['orderTypes'], $item['icebergAllowed'], $item['filters']);
+            $currencyPair = new CurrencyPair($base, $quote, $item['status'], $item['orderTypes'],
+                $item['icebergAllowed'], $item['filters']);
+
             $this->addCurrencyPair($currencyPair);
         }
     }

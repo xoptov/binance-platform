@@ -4,7 +4,9 @@ namespace Xoptov\BinancePlatform\Model\Part;
 
 trait IcebergTrait
 {
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $icebergVolume;
 
     /**

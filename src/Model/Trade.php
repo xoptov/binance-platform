@@ -15,20 +15,32 @@ class Trade implements TradeTypeInterface
 
     use TypeTrait;
 
-	/** @var int */
+    private static $idPrefix = 'int';
+
+    private static $idCounter = 1;
+
+	/**
+     * @var int
+     */
 	private $orderId;
 
-	/** @var CurrencyPair */
+	/**
+     * @var CurrencyPair
+     */
 	private $currencyPair;
 
-	/** @var Commission */
+	/**
+     * @var Commission
+     */
 	private $commission;
 
-	/** @var bool */
+	/**
+     * @var bool
+     */
 	private $maker;
 
 	/**
-	 * @param int          $id
+     * @param mixed        $id
      * @param CurrencyPair $currencyPair
 	 * @param string       $type
 	 * @param float        $price
@@ -37,9 +49,14 @@ class Trade implements TradeTypeInterface
      * @param bool         $maker
 	 * @param int          $timestamp
 	 */
-	public function __construct(int $id, CurrencyPair $currencyPair, string $type, float $price, float $volume, Commission $commission, bool $maker, int $timestamp)
+	public function __construct($id, CurrencyPair $currencyPair, string $type, float $price, float $volume, Commission $commission, bool $maker, int $timestamp)
 	{
-		$this->id = $id;
+	    if (empty($id)) {
+	        $this->id = self::generateInternalId();
+        } else {
+	        $this->id = $id;
+        }
+
 		$this->currencyPair = $currencyPair;
 		$this->type = $type;
 		$this->price = $price;
@@ -48,6 +65,14 @@ class Trade implements TradeTypeInterface
 		$this->maker = $maker;
 		$this->timestamp = $timestamp;
 	}
+
+    /**
+     * @return string
+     */
+	public static function generateInternalId(): string
+    {
+        return sprintf("%s%d", self::$idPrefix, self::$idCounter++);
+    }
 
     /**
      * @return int|null
@@ -59,6 +84,7 @@ class Trade implements TradeTypeInterface
 
     /**
      * @param int $orderId
+     *
      * @return Trade
      */
     public function setOrderId(int $orderId): self

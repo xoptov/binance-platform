@@ -4,7 +4,9 @@ namespace Xoptov\BinancePlatform\Model\Part;
 
 trait PriceTrait
 {
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $price;
 
     /**

@@ -19,7 +19,9 @@ class OrderStopLossLimit extends OrderOpen
 
     use IcebergTrait;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type = OrderTypeInterface::STOP_LOSS_LIMIT;
 
     /**

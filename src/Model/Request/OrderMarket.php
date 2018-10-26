@@ -6,6 +6,8 @@ use Xoptov\BinancePlatform\Model\Interfaces\OrderTypeInterface;
 
 class OrderMarket extends OrderOpen
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type = OrderTypeInterface::MARKET;
 }

@@ -14,28 +14,44 @@ use Xoptov\BinancePlatform\Model\Interfaces\TransactionStatusInterface;
 
 class History
 {
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private static $created = false;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $limit;
 
-    /** @var API */
+    /**
+     * @var API
+     */
     private $api;
 
-    /** @var Transaction[] */
+    /**
+     * @var Transaction[]
+     */
     private $transactions = array();
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $transactionsPart = 0;
 
-    /** @var CurrencyPair */
+    /**
+     * @var CurrencyPair
+     */
     private $tradePair;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $tradeLastId = 1;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $tradesEOS = false;
 
     /**
@@ -106,7 +122,9 @@ class History
 
             $commission = new Commission($currency, $item['commission']);
 
-            $trades[] = new Trade($item['id'], $this->tradePair, $type, $item['price'], $item['qty'], $commission, $item['isMaker'], $item['time']);
+            $trades[] = new Trade($item['id'], $this->tradePair, $type, $item['price'], $item['qty'], $commission,
+                $item['isMaker'], $item['time']);
+
             $this->tradeLastId = $item['id'];
         }
 
@@ -116,6 +134,7 @@ class History
     /**
      * @param int      $startTime
      * @param null|int $endTime
+     *
      * @return Transaction[]
      */
     public function getTransactions(int $startTime, ?int $endTime = null): array
@@ -154,6 +173,7 @@ class History
 
     /**
      * @param Transaction $transaction
+     *
      * @return bool
      */
     private function hasTransaction(Transaction $transaction): bool
@@ -170,6 +190,7 @@ class History
 
     /**
      * @param Transaction $transaction
+     *
      * @return bool
      */
     private function addTransaction(Transaction $transaction): bool
@@ -199,7 +220,10 @@ class History
             if (TransactionStatusInterface::DEPOSIT_SUCCESS != $deposit['status']) {
                 continue;
             }
-            $transaction = new Transaction($deposit['txId'], $currency, TransactionTypeInterface::DEPOSIT, $deposit['amount'], $deposit['insertTime']);
+
+            $transaction = new Transaction($deposit['txId'], $currency, TransactionTypeInterface::DEPOSIT,
+                $deposit['amount'], $deposit['insertTime']);
+
             $this->addTransaction($transaction);
         }
 
@@ -214,7 +238,9 @@ class History
                 continue;
             }
 
-            $transaction = new Transaction($withdraw['txId'], $currency, TransactionTypeInterface::WITHDRAW, $withdraw['amount'], $withdraw['applyTime']);
+            $transaction = new Transaction($withdraw['txId'], $currency, TransactionTypeInterface::WITHDRAW,
+                $withdraw['amount'], $withdraw['applyTime']);
+
             $this->addTransaction($transaction);
         }
 

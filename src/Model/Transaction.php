@@ -10,7 +10,9 @@ class Transaction implements TimeTrackAbleInterface, TransactionTypeInterface
 {
     use ActionTrait;
 
-	/** @var Currency */
+	/**
+     * @var Currency
+     */
 	private $currency;
 
 	/**
@@ -39,6 +41,7 @@ class Transaction implements TimeTrackAbleInterface, TransactionTypeInterface
 
     /**
      * @param Transaction $other
+     *
      * @return bool
      */
 	public function isEqual(Transaction $other): bool

@@ -4,7 +4,9 @@ namespace Xoptov\BinancePlatform\Model\Part;
 
 trait OrderIdTrait
 {
-    /** @var int */
+    /**
+     * @var int
+     */
     protected $orderId;
 
     /**

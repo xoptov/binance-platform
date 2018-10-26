@@ -4,7 +4,9 @@ namespace Xoptov\BinancePlatform\Model\Part;
 
 trait VolumeTrait
 {
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $volume;
 
     /**

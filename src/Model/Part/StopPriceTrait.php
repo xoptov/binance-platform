@@ -4,7 +4,9 @@ namespace Xoptov\BinancePlatform\Model\Part;
 
 trait StopPriceTrait
 {
-    /** @var float */
+    /**
+     * @var float
+     */
     protected $stopPrice;
 
     /**

@@ -6,6 +6,8 @@ use Xoptov\BinancePlatform\Model\Interfaces\OrderTypeInterface;
 
 class OrderTakeProfitLimit extends OrderStopLossLimit
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type = OrderTypeInterface::TAKE_PROFIT_LIMIT;
 }

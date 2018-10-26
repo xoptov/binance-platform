@@ -7,14 +7,18 @@ use Xoptov\BinancePlatform\Model\Interfaces\AccountAccessInterface;
 
 class Account implements AccountAccessInterface, AccountFeeInterface
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     private $access = array(
         self::TRADE    => false,
         self::WITHDRAW => false,
         self::DEPOSIT  => false
     );
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $fees = array(
         self::MAKER  => 0,
         self::TAKER  => 0,
@@ -22,10 +26,14 @@ class Account implements AccountAccessInterface, AccountFeeInterface
         self::SELLER => 0
     );
 
-    /** @var Active[] */
+    /**
+     * @var Active[]
+     */
     private $actives = array();
 
-    /** @var Order[] */
+    /**
+     * @var Order[]
+     */
     private $orders = array();
 
     /**
@@ -40,6 +48,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param string $action
+     *
      * @return bool
      */
     public function isCan(string $action): bool
@@ -53,6 +62,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param string $type
+     *
      * @return int
      */
     public function getFee(string $type): int
@@ -66,6 +76,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param string $symbol
+     *
      * @return bool
      */
     public function hasActive(string $symbol): bool
@@ -75,6 +86,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param Active $active
+     *
      * @return bool
      */
     public function addActive(Active $active): bool
@@ -90,6 +102,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param string $symbol
+     *
      * @return null|Active
      */
     public function getActive(string $symbol): ?Active
@@ -103,6 +116,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param int $id
+     *
      * @return bool
      */
     public function hasOrder(int $id): bool
@@ -112,6 +126,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param int $id
+     *
      * @return null|Order
      */
     public function getOrder(int $id): ?Order
@@ -125,6 +140,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param Order $order
+     *
      * @return bool
      */
     public function addOrder(Order $order): bool
@@ -146,6 +162,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param Order $order
+     *
      * @return bool
      */
     public function removeOrder(Order $order): bool
@@ -233,6 +250,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param array $access
+     *
      * @return Account
      */
     private function setAccess(array $access): self
@@ -248,6 +266,7 @@ class Account implements AccountAccessInterface, AccountFeeInterface
 
     /**
      * @param array $fees
+     *
      * @return Account
      */
     private function setFees(array $fees): self

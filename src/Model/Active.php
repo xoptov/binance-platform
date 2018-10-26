@@ -6,34 +6,54 @@ use Xoptov\BinancePlatform\Model\Interfaces\TradeTypeInterface;
 
 class Active
 {
-    /** @var Currency */
+    /**
+     * @var Currency
+     */
     private $currency;
 
-    /** @var Position */
+    /**
+     * @var Position
+     */
     private $position;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $supportedTransactions = [Transaction::DEPOSIT, Transaction::WITHDRAW];
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private $supportedTrades = [TradeTypeInterface::BUY, TradeTypeInterface::SELL];
 
-    /** @var float */
+    /**
+     * @var float
+     */
     private $volume;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     private $locked;
 
-    /** @var double */
+    /**
+     * @var double
+     */
     private $actualVolume = 0.0;
 
-    /** @var Transaction[] */
+    /**
+     * @var Transaction[]
+     */
     private $transactions = array();
 
-    /** @var Trade[] */
+    /**
+     * @var Trade[]
+     */
     private $trades = array();
 
-    /** @var Order[] */
+    /**
+     * @var Order[]
+     */
     private $orders = array();
 
     /**
@@ -51,7 +71,7 @@ class Active
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getSymbol();
     }
@@ -114,6 +134,7 @@ class Active
 
     /**
      * @param Transaction $transaction
+     *
      * @return bool
      */
     public function hasTransaction(Transaction $transaction): bool
@@ -129,6 +150,7 @@ class Active
 
     /**
      * @param Trade $trade
+     *
      * @return bool
      */
     public function hasTrade(Trade $trade): bool
@@ -138,6 +160,7 @@ class Active
 
     /**
      * @param Transaction $transaction
+     *
      * @return bool
      */
     public function execute(Transaction $transaction): bool
@@ -163,6 +186,7 @@ class Active
 
     /**
      * @param Trade $trade
+     *
      * @return bool
      */
     public function trade(Trade $trade): bool
@@ -188,6 +212,7 @@ class Active
 
     /**
      * @param Active $other
+     *
      * @return bool
      */
     public function isEqual(Active $other)
@@ -267,6 +292,7 @@ class Active
 
     /**
      * @param Order $order
+     *
      * @return bool
      */
     public function hasOrder(Order $order): bool
@@ -276,6 +302,7 @@ class Active
 
     /**
      * @param Order $order
+     *
      * @return bool
      */
     public function addOrder(Order $order): bool
@@ -296,6 +323,7 @@ class Active
 
     /**
      * @param Order $order
+     *
      * @return bool
      */
     public function removeOrder(Order $order): bool

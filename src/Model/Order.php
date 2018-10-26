@@ -24,31 +24,59 @@ class Order implements OrderSideInterface, OrderTypeInterface, OrderStatusInterf
 
     use TimeInForceTrait;
 
-	/** @var int */
+	/**
+     * @var int
+     */
 	private $id;
+
+	/**
+     * @var string
+     */
+	private $clientOrderId;
 	
-	/** @var CurrencyPair */
+	/**
+     * @var CurrencyPair
+     */
 	private $currencyPair;
 	
-	/** @var Trade[] */
+	/**
+     * @var Trade[]
+     */
 	private $trades = array();
 
-    /** @var string */
+    /**
+     * @var string
+     */
 	private $side;
 
-    /** @var string */
+    /**
+     * @var string
+     */
 	private $status;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     private $executedVolume;
 
-    /** @var int */
+    /**
+     * @var float
+     */
+    private $cumulativeQuoteVolume;
+
+    /**
+     * @var int
+     */
 	private $createdAt;
 	
-	/** @var int */
+	/**
+     * @var int
+     */
 	private $updatedAt;
 
-	/** @var bool */
+	/**
+     * @var bool
+     */
 	private $keepInLock;
 	
 	/**
@@ -61,12 +89,17 @@ class Order implements OrderSideInterface, OrderTypeInterface, OrderStatusInterf
      * @param float        $volume
      * @param float        $stopPrice
      * @param float        $executedVolume
+     * @param float        $cumulativeQuoteVolume
      * @param float        $icebergVolume
 	 * @param int          $createdAt
 	 * @param int          $updatedAt
+     * @param string|null  $clientOrderId
      * @param bool|null    $keepInLock
 	 */
-	public function __construct(int $id, CurrencyPair $currencyPair, string $type, string $side, string $status, float $price, float $volume, float $stopPrice, float $executedVolume, float $icebergVolume, int $createdAt, int $updatedAt, ?bool $keepInLock = true)
+	public function __construct(int $id, CurrencyPair $currencyPair, string $type, string $side, string $status,
+                                float $price, float $volume, float $stopPrice, float $executedVolume,
+                                float $cumulativeQuoteVolume, float $icebergVolume, int $createdAt, int $updatedAt,
+                                ?string $clientOrderId, ?bool $keepInLock = true)
 	{
 		$this->id = $id;
 		$this->currencyPair = $currencyPair;
@@ -77,9 +110,11 @@ class Order implements OrderSideInterface, OrderTypeInterface, OrderStatusInterf
 		$this->volume = $volume;
 		$this->stopPrice = $stopPrice;
 		$this->executedVolume = $executedVolume;
+		$this->cumulativeQuoteVolume = $cumulativeQuoteVolume;
 		$this->icebergVolume = $icebergVolume;
 		$this->createdAt = $createdAt;
 		$this->updatedAt = $updatedAt;
+		$this->clientOrderId = $clientOrderId;
 		$this->keepInLock = $keepInLock;
 	}
 	
@@ -131,8 +166,8 @@ class Order implements OrderSideInterface, OrderTypeInterface, OrderStatusInterf
 
     /**
      * @param Trade $trade
+     *
      * @return bool
-     * @todo Refactoring with better validation.
      */
     public function fill(Trade $trade): bool
     {
@@ -204,6 +239,14 @@ class Order implements OrderSideInterface, OrderTypeInterface, OrderStatusInterf
 	}
 
     /**
+     * @return string
+     */
+    public function getClientOrderId(): string
+    {
+        return $this->clientOrderId;
+    }
+
+    /**
      * @return bool
      */
 	public function isKeepInLock(): bool
@@ -245,6 +288,7 @@ class Order implements OrderSideInterface, OrderTypeInterface, OrderStatusInterf
 
     /**
      * @param Trade $trade
+     *
      * @return bool
      */
     private function hasTrade(Trade $trade): bool
@@ -254,6 +298,7 @@ class Order implements OrderSideInterface, OrderTypeInterface, OrderStatusInterf
 
     /**
      * @param Trade $trade
+     *
      * @return bool
      */
     private function addTrade(Trade $trade): bool

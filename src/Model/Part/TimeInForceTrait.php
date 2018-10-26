@@ -4,7 +4,9 @@ namespace Xoptov\BinancePlatform\Model\Part;
 
 trait TimeInForceTrait
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $timeInForce;
 
     /**

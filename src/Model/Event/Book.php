@@ -9,25 +9,39 @@ class Book
 {
     const TYPE_UPDATE = 'update';
 
-    /** @var CurrencyPair */
+    /**
+     * @var CurrencyPair
+     */
     private $currencyPair;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $type;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $timestamp;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $firstUpdateId;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $finalUpdateId;
 
-    /** @var Rate[] */
+    /**
+     * @var Rate[]
+     */
     private $bids = array();
 
-    /** @var Rate[] */
+    /**
+     * @var Rate[]
+     */
     private $asks = array();
 
     /**
@@ -37,7 +51,8 @@ class Book
      * @param int          $firstUpdateId
      * @param int          $finalUpdateId
      */
-    public function __construct(CurrencyPair $currencyPair, string $type, int $timestamp, int $firstUpdateId, int $finalUpdateId)
+    public function __construct(CurrencyPair $currencyPair, string $type, int $timestamp, int $firstUpdateId,
+                                int $finalUpdateId)
     {
         $this->currencyPair = $currencyPair;
         $this->type = $type;

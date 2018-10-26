@@ -4,10 +4,14 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Commission
 {
-    /** @var Currency */
+    /**
+     * @var Currency
+     */
     private $currency;
 
-    /** @var float */
+    /**
+     * @var float
+     */
     private $volume;
 
     /**

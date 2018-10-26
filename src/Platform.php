@@ -14,49 +14,70 @@ use Xoptov\BinancePlatform\Model\Account;
 use Xoptov\BinancePlatform\Model\Currency;
 use Xoptov\BinancePlatform\Model\Commission;
 use Xoptov\BinancePlatform\Model\Transaction;
+use Xoptov\BinancePlatform\Model\Response\Ack;
 use React\Socket\Connector as SocketConnector;
 use Xoptov\BinancePlatform\Model\CurrencyPair;
 use Xoptov\BinancePlatform\Model\Event\Trade as TradeEvent;
+use Xoptov\BinancePlatform\Model\Request\Order as OrderRequest;
 use Xoptov\BinancePlatform\Model\Interfaces\TradeTypeInterface;
 use Xoptov\BinancePlatform\Model\Interfaces\AccountFeeInterface;
 use Xoptov\BinancePlatform\Model\Interfaces\OrderStatusInterface;
 use Xoptov\BinancePlatform\Model\Interfaces\TimeTrackAbleInterface;
 use Xoptov\BinancePlatform\Model\Interfaces\AccountAccessInterface;
+use Xoptov\BinancePlatform\Model\Request\OrderOpen as OrderOpenRequest;
+use Xoptov\BinancePlatform\Model\Request\OrderCheck as OrderCheckRequest;
+use Xoptov\BinancePlatform\Model\Request\OrderCancel as OrderCancelRequest;
 
 class Platform
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private static $stream = 'wss://stream.binance.com:9443/ws/';
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private static $created = false;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private static $limit = 500;
 
-    /** @var int */
-    private static $subscribes = 0;
-
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $initialized = false;
 
-    /** @var API */
+    /**
+     * @var API
+     */
     private $api;
 
-    /** @var Account */
+    /**
+     * @var Account
+     */
     private $account;
 
-    /** @var CurrencyPair */
+    /**
+     * @var CurrencyPair
+     */
     private $tradePair;
 
-    /** @var Exchange */
+    /**
+     * @var Exchange
+     */
     private $exchange;
 
-    /** @var History */
+    /**
+     * @var History
+     */
     private $history;
 
     /**
      * @param int|null $limit
+     *
      * @return null|Platform
      */
     public static function create(?int $limit = 500): ?Platform
@@ -80,6 +101,7 @@ class Platform
      * @param string $symbol
      * @param string $apiKey
      * @param string $secret
+     *
      * @return bool
      */
     public function initialize(string $symbol, string $apiKey, string $secret): bool
@@ -125,6 +147,9 @@ class Platform
         return true;
     }
 
+    /**
+     * @throws \RuntimeException
+     */
     public function run(): void
     {
         if (!$this->initialized) {
@@ -166,6 +191,7 @@ class Platform
 
     /**
      * @param int $orderId
+     *
      * @return bool
      */
     public function hasOrder(int $orderId): bool
@@ -175,6 +201,7 @@ class Platform
 
     /**
      * @param string $symbol
+     *
      * @return null|CurrencyPair
      */
     public function getCurrencyPair(string $symbol): ?CurrencyPair
@@ -184,6 +211,7 @@ class Platform
 
     /**
      * @param string $symbol
+     *
      * @return null|Currency
      */
     public function getCurrency(string $symbol): ?Currency
@@ -193,6 +221,7 @@ class Platform
 
     /**
      * @param string $type
+     *
      * @return float
      */
     public function getAccountFee(string $type): float
@@ -202,6 +231,7 @@ class Platform
 
     /**
      * @param int $orderId
+     *
      * @return bool
      */
     public function isMyOrder(int $orderId): bool
@@ -212,6 +242,7 @@ class Platform
     /**
      * @param float $volume
      * @param int   $fee
+     *
      * @return float
      */
     public function calculateCommissionVolume(float $volume, int $fee): float
@@ -220,9 +251,49 @@ class Platform
     }
 
     /**
-     * @param TradeRequest $tradeRequest
+     * @param OrderRequest $request
+     *
+     * @return mixed
      */
-    public function orderSend(TradeRequest $tradeRequest)
+    public function orderSend(OrderRequest $request)
+    {
+        if ($request instanceof OrderCheckRequest) {
+            $result = $this->checkOrder($request);
+        } elseif ($request instanceof OrderCancelRequest) {
+            $result = $this->cancelOrder($request);
+        } else {
+            /** @var OrderOpenRequest $request */
+            $result = $this->openOrder($request);
+        }
+        //TODO: may be need processing result here?
+    }
+
+    /**
+     * @param OrderOpenRequest $request
+     *
+     * @return null|Ack
+     */
+    private function openOrder(OrderOpenRequest $request): ?Ack
+    {
+        //TODO: need implement this logic.
+    }
+
+    /**
+     * @param OrderCheckRequest $request
+     *
+     * @return null|Order
+     */
+    private function checkOrder(OrderCheckRequest $request): ?Order
+    {
+        //TODO: need implement this logic.
+    }
+
+    /**
+     * @param OrderCancelRequest $request
+     *
+     * @return null|Order
+     */
+    private function cancelOrder(OrderCancelRequest $request): ?Order
     {
         //TODO: need implement this logic.
     }
@@ -434,24 +505,27 @@ class Platform
      * @param string     $type
      * @param Commission $commission
      * @param bool       $isMaker
+     *
      * @return Trade
      */
     private function createTrade(TradeEvent $event, string $type, Commission $commission, bool $isMaker): Trade
     {
-        return new Trade($event->getTradeId(), $event->getCurrencyPair(), $type, $event->getPrice(), $event->getVolume(), $commission, $isMaker, $event->getTimestamp());
+        return new Trade($event->getTradeId(), $event->getCurrencyPair(), $type, $event->getPrice(),
+            $event->getVolume(), $commission, $isMaker, $event->getTimestamp());
     }
 
     /**
      * @param CurrencyPair $currencyPair
      * @param array        $data
      * @param bool         $keepInLock
+     *
      * @return Order
      */
     private function createOrder(CurrencyPair $currencyPair, array $data, bool $keepInLock): Order
     {
         return new Order($data['orderId'], $currencyPair, $data['type'], $data['side'], $data['status'],
             $data['price'], $data['origQty'], $data['stopPrice'], $data['executedQty'], $data['icebergQty'],
-            $data['time'], $data['updateTime'], $keepInLock
+            $data['time'], $data['updateTime'], $data['clientOrderId'], $keepInLock
         );
     }
 }

@@ -10,7 +10,9 @@ class OrderLimitMaker extends OrderOpen
 {
     use PriceTrait;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type = OrderTypeInterface::LIMIT_MAKER;
 
     /**
@@ -21,7 +23,8 @@ class OrderLimitMaker extends OrderOpen
      * @param string|null  $clientOrderId
      * @param string|null  $responseType
      */
-    public function __construct(CurrencyPair $currencyPair, string $side, float $volume, float $price, ?string $clientOrderId = null, ?string $responseType = null)
+    public function __construct(CurrencyPair $currencyPair, string $side, float $volume, float $price,
+                                ?string $clientOrderId = null, ?string $responseType = null)
     {
         parent::__construct($currencyPair, $side, $volume, $clientOrderId, $responseType);
 

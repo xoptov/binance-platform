@@ -4,14 +4,19 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Position
 {
-    /** @var Rate[] */
+    /**
+     * @var Rate[]
+     */
     private $purchases = array();
 
-    /** @var float */
+    /**
+     * @var float
+     */
     private $volume = 0.0;
 
     /**
      * @param Trade $trade
+     *
      * @return bool
      */
     public function purchase(Trade $trade): bool

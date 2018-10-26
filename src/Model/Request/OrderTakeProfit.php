@@ -6,6 +6,8 @@ use Xoptov\BinancePlatform\Model\Interfaces\OrderTypeInterface;
 
 class OrderTakeProfit extends OrderStopLoss
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type = OrderTypeInterface::TAKE_PROFIT;
 }

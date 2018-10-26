@@ -16,7 +16,9 @@ class OrderLimit extends OrderOpen
 
     use IcebergTrait;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     protected $type = OrderTypeInterface::LIMIT;
 
     /**
@@ -29,7 +31,9 @@ class OrderLimit extends OrderOpen
      * @param string|null  $clientOrderId
      * @param string|null  $responseType
      */
-    public function __construct(CurrencyPair $currencyPair, string $side, float $volume, string $timeInForce, float $price, ?float $icebergVolume = null, ?string $clientOrderId = null, ?string $responseType = null)
+    public function __construct(CurrencyPair $currencyPair, string $side, float $volume, string $timeInForce,
+                                float $price, ?float $icebergVolume = null, ?string $clientOrderId = null,
+                                ?string $responseType = null)
     {
         parent::__construct($currencyPair, $side, $volume, $clientOrderId, $responseType);
 

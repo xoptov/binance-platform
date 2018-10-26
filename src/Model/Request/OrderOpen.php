@@ -13,10 +13,14 @@ abstract class OrderOpen extends Order implements OrderTypeInterface
 
     use VolumeTrait;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $side;
 
-    /** @var string */
+    /**
+     * @var string
+     */
     private $responseType;
 
     /**
@@ -26,7 +30,8 @@ abstract class OrderOpen extends Order implements OrderTypeInterface
      * @param string|null  $clientOrderId
      * @param string|null  $responseType
      */
-    public function __construct(CurrencyPair $currencyPair, string $side, float $volume, ?string $clientOrderId = null, ?string $responseType = null)
+    public function __construct(CurrencyPair $currencyPair, string $side, float $volume, ?string $clientOrderId = null,
+                                ?string $responseType = null)
     {
         parent::__construct($currencyPair, $clientOrderId);
 

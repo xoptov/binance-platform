@@ -4,7 +4,9 @@ namespace Xoptov\BinancePlatform\Model;
 
 class Currency
 {
-    /** @var string */
+    /**
+     * @var string
+     */
     private $symbol;
 
     /**
@@ -18,7 +20,7 @@ class Currency
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->symbol;
     }

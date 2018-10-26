@@ -12,28 +12,44 @@ class Trade
 
     private static $number = 0;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $eventTime;
 
-    /** @var CurrencyPair */
+    /**
+     * @var CurrencyPair
+     */
     private $currencyPair;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $tradeId;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $buyerOrderId;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $sellerOrderId;
 
-    /** @var int */
+    /**
+     * @var int
+     */
     private $timestamp;
 
-    /** @var bool */
+    /**
+     * @var bool
+     */
     private $buyerMaker;
 
-    /** @var array */
+    /**
+     * @var array
+     */
     private static $mapping = [
         'eventTime'     => 'E',
         'tradeId'       => 't',
